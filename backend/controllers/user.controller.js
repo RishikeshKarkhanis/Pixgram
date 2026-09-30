@@ -4,7 +4,7 @@ const Like = require("../models/like.model.js");
 const Post = require("../models/post.model.js");
 const Follow = require("../models/follow.model.js");
 const { v4: uuidv4 } = require('uuid');
-const { setUser, getUser } = require('../services/auth.js');
+const { setUser, getUser } = require('../utils/auth.js');
 
 const getUsers = async () => {
     const users = await User.find();

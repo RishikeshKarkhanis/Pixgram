@@ -2,7 +2,7 @@ const express = require('express'); // Import Express framework
 
 // Import controller functions for user operations
 const { createUser,getUsers,deleteUser, updateUser, loginUser } = require('../controllers/user.controller.js');
-const { getUser } = require('../services/auth.js');
+const { getUser } = require('../utils/auth.js');
 
 // Import User and Post models
 const User = require('../models/user.model.js');

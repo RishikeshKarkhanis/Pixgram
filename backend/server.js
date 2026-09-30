@@ -10,7 +10,7 @@ const commentRoutes = require('./routes/comments.routes.js');
 const followRoutes = require('./routes/follow.routes.js');
 
 // Importing database connection and authentication middleware
-const connectDatabase = require('./services/databaseConnection.js');
+const connectDatabase = require('./utils/databaseConnection.js');
 const restrictAccess = require('./middlewares/auth.middleware.js')
 
 // Initializing the Express application
