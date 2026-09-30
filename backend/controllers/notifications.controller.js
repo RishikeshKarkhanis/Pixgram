@@ -1,26 +1,81 @@
-const Notification = require('../models/notifications.model.js');
+const { Types: { ObjectId } } = require('mongoose');
 
-const getNotifications = async () => {
-    const notifications = await Notification.find({});
-    console.log('Notifications retrieved successfully:', notifications);
-}
+const notificationService = require('../services/notification.service.js');
 
-const createNotification = async (notificationData) => {
-    const result = await Notification.create(notificationData);
-    console.log('Notification created successfully:', result);
-    return result;
-}
+const getNotifications = async (req, res) => {
+    try {
+        const notifications =
+            await notificationService.getNotifications();
 
-const deleteNotification = async (notificationId) => {
-    const result = await Notification.deleteOne({ _id: notificationId });
-    if (result.deletedCount > 0) {
-        console.log('Notification deleted successfully');
-        return result;
+        return res.status(200).json(notifications);
+    } catch (error) {
+        console.error(
+            'Error retrieving notifications:',
+            error
+        );
+
+        return res.status(500).json({
+            error: 'Failed to retrieve notifications'
+        });
     }
-    else {
-        console.log('No notification found to delete');
-        return null;
-    }
-}
+};
 
-module.exports = { getNotifications, createNotification, deleteNotification };
+const createNotification = async (req, res) => {
+    try {
+        const notification =
+            await notificationService.createNotification(
+                req.body
+            );
+
+        return res.status(201).json(notification);
+    } catch (error) {
+        console.error(
+            'Error creating notification:',
+            error
+        );
+
+        return res.status(500).json({
+            error: 'Failed to create notification'
+        });
+    }
+};
+
+const deleteNotification = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({
+                error: 'Invalid notification ID'
+            });
+        }
+
+        const result =
+            await notificationService.deleteNotification(id);
+
+        if (!result) {
+            return res.status(404).json({
+                error: 'Notification not found'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Notification deleted successfully'
+        });
+    } catch (error) {
+        console.error(
+            'Error deleting notification:',
+            error
+        );
+
+        return res.status(500).json({
+            error: 'Failed to delete notification'
+        });
+    }
+};
+
+module.exports = {
+    getNotifications,
+    createNotification,
+    deleteNotification
+};

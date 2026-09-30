@@ -11,7 +11,8 @@ const followRoutes = require('./routes/follow.routes.js');
 
 // Importing database connection and authentication middleware
 const connectDatabase = require('./utils/databaseConnection.js');
-const restrictAccess = require('./middlewares/auth.middleware.js')
+const restrictAccess = require('./middlewares/auth.middleware.js');
+const errorHandler = require('./middlewares/error.middleware.js');
 
 // Initializing the Express application
 const app = express()
@@ -34,6 +35,16 @@ app.use('/likes', restrictAccess, likeRoutes);
 app.use('/comments', restrictAccess, commentRoutes);
 app.use('/follows', restrictAccess, followRoutes);
 app.use('/notifications', restrictAccess, require('./routes/notifications.routes.js'));
+
+app.get('/test-error', (req, res, next) => {
+    const error = new Error('Global error handler works!');
+    error.statusCode = 400;
+
+    next(error);
+});
+
+// Error handling middleware to catch and respond to errors
+app.use(errorHandler);
 
 connectDatabase(); // Establishing database connection
 

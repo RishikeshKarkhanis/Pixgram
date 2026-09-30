@@ -1,53 +1,90 @@
-const Comment = require('../models/comment.model.js');
-const Post = require('../models/post.model.js');
 const { Types: { ObjectId } } = require('mongoose');
 
+const commentService = require('../services/comment.service.js');
+
 const getComments = async (req, res) => {
-    const comments = await Comment.find({});
-    console.log('Comments retrieved successfully:', comments);
+    try {
+        const comments = await commentService.getComments();
+
+        return res.status(200).json(comments);
+    } catch (error) {
+        console.error('Error retrieving comments:', error);
+
+        return res.status(500).json({
+            error: 'Failed to retrieve comments'
+        });
+    }
 };
 
 const getPostComments = async (req, res) => {
-    const postId = req.params.id;
-    if (!ObjectId.isValid(postId)) {
-        return res.status(400).json({ error: 'Invalid post ID' });
-    }
+    try {
+        const postId = req.params.id;
 
-    const comments = await Comment.find({ postId: postId })
-        .populate('userId', 'username profilePicture')
-        .sort({ createdAt: -1 })
-        .lean();  // return plain JS objects (easy to modify);
-    console.log(`Comments for post ${postId} retrieved successfully:`, comments);
-    return comments;
-}
+        if (!ObjectId.isValid(postId)) {
+            return res.status(400).json({
+                error: 'Invalid post ID'
+            });
+        }
 
-const createComment = async (commentData) => {
-    const result = await Comment.create(commentData);
-    console.log('Comment created successfully:', result);
+        const comments = await commentService.getPostComments(postId);
 
-    await Post.updateOne(
-        { _id: commentData.postId },
-        { $inc: { comments: 1 } }
-    );
+        return res.status(200).json(comments);
+    } catch (error) {
+        console.error('Error retrieving post comments:', error);
 
-    return result;
-};
-
-const deleteComment = async (commentId, commentData) => {
-    const result = await Comment.deleteOne({ _id: commentId });
-    if (result.deletedCount > 0) {
-        console.log(result);
-
-        await Post.updateOne(
-            { _id: commentData.postId },
-            { $inc: { comments: -1 } }
-        );
-
-        return result
-    } else {
-        console.log('No comment found to delete');
-        return null;
+        return res.status(500).json({
+            error: 'Failed to retrieve post comments'
+        });
     }
 };
 
-module.exports = { getComments, createComment, deleteComment, getPostComments };
+const createComment = async (req, res) => {
+    try {
+        const comment = await commentService.createComment(req.body);
+
+        return res.status(201).json(comment);
+    } catch (error) {
+        console.error('Error creating comment:', error);
+
+        return res.status(500).json({
+            error: 'Failed to create comment'
+        });
+    }
+};
+
+const deleteComment = async (req, res) => {
+    try {
+        const commentId = req.params.id;
+
+        if (!ObjectId.isValid(commentId)) {
+            return res.status(400).json({
+                error: 'Invalid comment ID'
+            });
+        }
+
+        const result = await commentService.deleteComment(commentId);
+
+        if (!result) {
+            return res.status(404).json({
+                error: 'Comment not found'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Comment deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+
+        return res.status(500).json({
+            error: 'Failed to delete comment'
+        });
+    }
+};
+
+module.exports = {
+    getComments,
+    getPostComments,
+    createComment,
+    deleteComment
+};

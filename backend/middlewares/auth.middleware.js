@@ -1,15 +1,25 @@
-const {getUser} = require('../utils/auth.js');
+const { getUser } = require('../utils/auth.js');
 
-function restrictAccess(req, res, next) {
+const restrictAccess = (req, res, next) => {
     const uid = req.cookies.uid;
+
+    if (!uid) {
+        return res.status(401).json({
+            error: 'Unauthorized: No valid user session found'
+        });
+    }
+
     const user = getUser(uid);
 
     if (!user) {
-        return res.status(401).send("Unauthorized: No valid user session found");
+        return res.status(401).json({
+            error: 'Unauthorized: No valid user session found'
+        });
     }
 
-    req.user = user; // Attach user to request object
-    next(); // Proceed to the next middleware or route handler
-}
+    req.user = user;
+
+    next();
+};
 
 module.exports = restrictAccess;

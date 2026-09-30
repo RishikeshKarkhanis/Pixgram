@@ -1,99 +1,141 @@
-const User = require('../models/user.model.js');
-const Comment = require("../models/comment.model.js");
-const Like = require("../models/like.model.js");
-const Post = require("../models/post.model.js");
-const Follow = require("../models/follow.model.js");
-const { v4: uuidv4 } = require('uuid');
-const { setUser, getUser } = require('../utils/auth.js');
+const { Types: { ObjectId } } = require('mongoose');
 
-const getUsers = async () => {
-    const users = await User.find();
-    console.log('Users retrieved successfully:', users);
-}
+const userService = require('../services/user.service.js');
 
-const createUser = async (userData) => {
+const getUsers = async (req, res) => {
     try {
-        const result = await User.create(userData);
-        console.log('User created successfully:', result);
-        return result;
-    }
-    catch (error) {
-        console.error('Error creating user:', error);
-        return null;
-    }
+        const users = await userService.getUsers();
 
-}
+        return res.status(200).json(users);
+    } catch (error) {
+        console.error(
+            'Error retrieving users:',
+            error
+        );
+
+        return res.status(500).json({
+            error: 'Failed to retrieve users'
+        });
+    }
+};
+
+const createUser = async (req, res) => {
+    try {
+        const user = await userService.createUser(
+            req.body
+        );
+
+        return res.status(201).json(user);
+    } catch (error) {
+        console.error(
+            'Error creating user:',
+            error
+        );
+
+        return res.status(500).json({
+            error: 'Failed to create user'
+        });
+    }
+};
 
 const loginUser = async (req, res) => {
-    const userData = req.body;
-    const user = await User.findOne(userData);
+    try {
+        const result = await userService.loginUser(
+            req.body
+        );
 
-    if (!user) {
-        console.log('Login failed: Invalid credentials');
-        return null;
-    }
-
-    const token = setUser(user);
-    res.cookie('uid', token);
-
-    console.log('Login successful for user:', user.username);
-    return user;
-}
-
-const deleteUser = async (userId) => {
-    const result = await User.findByIdAndDelete(userId);
-    if (!result) return null;
-
-    const userPosts = await Post.find({ postedBy: userId });
-
-    for (const post of userPosts) {
-        await Comment.deleteMany({ post: post._id });
-        await Like.deleteMany({ post: post._id });
-    }
-
-    const userFollows = await Follow.find({
-        $or: [{ follower: userId }, { following: userId }]
-    });
-
-    for (const f of userFollows) {
-        if (f.follower.toString() === userId.toString()) {
-            // deleted user was the follower
-            await User.findByIdAndUpdate(f.following, { $inc: { followers: -1 } });
+        if (!result) {
+            return res.status(401).json({
+                error: 'Invalid credentials'
+            });
         }
-        if (f.following.toString() === userId.toString()) {
-            // deleted user was being followed
-            await User.findByIdAndUpdate(f.follower, { $inc: { following: -1 } });
+
+        res.cookie('uid', result.token);
+
+        return res.status(200).json(result.user);
+    } catch (error) {
+        console.error(
+            'Error logging in user:',
+            error
+        );
+
+        return res.status(500).json({
+            error: 'Failed to login'
+        });
+    }
+};
+
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({
+                error: 'Invalid user ID'
+            });
         }
+
+        const result = await userService.deleteUser(id);
+
+        if (!result) {
+            return res.status(404).json({
+                error: 'User not found'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'User deleted successfully'
+        });
+    } catch (error) {
+        console.error(
+            'Error deleting user:',
+            error
+        );
+
+        return res.status(500).json({
+            error: 'Failed to delete user'
+        });
     }
+};
 
-    const userComments = await Comment.find({userId:userId});
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-    for(const c of userComments) {
-        const pid = c.postId;
-        await Post.findByIdAndUpdate(pid, { $inc: { comments: -1 } });
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({
+                error: 'Invalid user ID'
+            });
+        }
+
+        const user = await userService.updateUser(
+            id,
+            req.body
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found'
+            });
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error(
+            'Error updating user:',
+            error
+        );
+
+        return res.status(500).json({
+            error: 'Failed to update user'
+        });
     }
+};
 
-    const userLikes = await Like.find({userId:userId});
-
-    for(const l of userLikes) {
-        const pid = l.postId;
-        await Post.findByIdAndUpdate(pid, { $inc: { likes: -1 } });
-    }
-
-    await Post.deleteMany({ postedBy: userId });
-
-    await Comment.deleteMany({ userId: userId });
-    await Like.deleteMany({ userId: userId });
-
-    await Follow.deleteMany({ $or: [{ follower: userId }, { following: userId }] });
-
-    return result;
-}
-
-const updateUser = async (userId, userData) => {
-    const result = await User.findByIdAndUpdate(userId, userData, { new: true });
-    console.log('User updated successfully:', result);
-    return result;
-}
-
-module.exports = { createUser, getUsers, deleteUser, updateUser, loginUser };
+module.exports = {
+    getUsers,
+    createUser,
+    loginUser,
+    deleteUser,
+    updateUser
+};

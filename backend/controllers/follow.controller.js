@@ -1,61 +1,119 @@
-const Follow = require('../models/follow.model.js');
-const User = require('../models/user.model.js');
+const { Types: { ObjectId } } = require('mongoose');
 
-const getFollows = async () => {
-    const follows = await Follow.find({});
-    console.log('Follows retrieved successfully:', follows);
-}
+const followService = require('../services/follow.service.js');
 
-const isFollowing = async (followingId, followerId) => {
-    const data = await Follow.find({follower:followerId, following:followingId});
-    console.log(data[0]);
-    if(data[0]) {
-        return data[0];
+const getFollows = async (req, res) => {
+    try {
+        const follows = await followService.getFollows();
+
+        return res.status(200).json(follows);
+    } catch (error) {
+        console.error('Error retrieving follows:', error);
+
+        return res.status(500).json({
+            error: 'Failed to retrieve follows'
+        });
     }
-    else {
-        return null
+};
+
+const isFollowing = async (req, res) => {
+    try {
+        const { followingId, followerId } = req.params;
+
+        if (
+            !ObjectId.isValid(followingId) ||
+            !ObjectId.isValid(followerId)
+        ) {
+            return res.status(400).json({
+                error: 'Invalid user ID'
+            });
+        }
+
+        const follow = await followService.isFollowing(
+            followingId,
+            followerId
+        );
+
+        return res.status(200).json({
+            isFollowing: !!follow,
+            follow
+        });
+    } catch (error) {
+        console.error('Error checking follow status:', error);
+
+        return res.status(500).json({
+            error: 'Failed to check follow status'
+        });
     }
-}
+};
 
-const createFollow = async (followingId, followerId) => {
-    const result = await Follow.create({"follower": followerId, "following": followingId});
+const createFollow = async (req, res) => {
+    try {
+        const { followingId, followerId } = req.params;
 
-    const follower = await User.findById(followerId);
-    const following = await User.findById(followingId);
+        if (
+            !ObjectId.isValid(followingId) ||
+            !ObjectId.isValid(followerId)
+        ) {
+            return res.status(400).json({
+                error: 'Invalid user ID'
+            });
+        }
 
-    console.log(`User ${follower.username} is now following ${following.username}`);
+        const result = await followService.createFollow(
+            followingId,
+            followerId
+        );
 
-    await User.updateOne(
-        { _id: followingId },
-        { $inc: { followers: 1 } }
-    );
+        return res.status(201).json(result);
+    } catch (error) {
+        console.error('Error creating follow:', error);
 
-    await User.updateOne(
-        { _id: followerId },
-        { $inc: { following: 1 } }
-    );
+        return res.status(500).json({
+            error: 'Failed to follow user'
+        });
+    }
+};
 
-    return result;
-}
+const deleteFollow = async (req, res) => {
+    try {
+        const { followingId, followerId } = req.params;
 
-const deleteFollow = async (followingId, followerId) => {
-    const result = await Follow.find({"follower": followerId, "following": followingId});
-    const follower = await User.findById(followerId);
-    const following = await User.findById(followingId);
-    const data = await Follow.deleteOne({"follower": followerId, "following": followingId});
-    console.log(`User ${follower.username} unfollowed ${following.username}`);
+        if (
+            !ObjectId.isValid(followingId) ||
+            !ObjectId.isValid(followerId)
+        ) {
+            return res.status(400).json({
+                error: 'Invalid user ID'
+            });
+        }
 
-    await User.updateOne(
-        { _id: followingId },
-        { $inc: { followers: -1 } }
-    );
+        const result = await followService.deleteFollow(
+            followingId,
+            followerId
+        );
 
-    await User.updateOne(
-        { _id: followerId },
-        { $inc: { following: -1 } }
-    );
+        if (result.deletedCount === 0) {
+            return res.status(404).json({
+                error: 'Follow relationship not found'
+            });
+        }
 
-    return data;
-}
+        return res.status(200).json({
+            message: 'User unfollowed successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting follow:', error);
 
-module.exports = {getFollows, createFollow, deleteFollow, isFollowing};
+        return res.status(500).json({
+            error: 'Failed to unfollow user'
+        });
+    }
+};
+
+module.exports = {
+    getFollows,
+    isFollowing,
+    createFollow,
+    deleteFollow
+};
