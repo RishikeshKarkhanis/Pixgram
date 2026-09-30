@@ -1,15 +1,15 @@
-const User = require('../models/user.model.js');
-const Comment = require('../models/comment.model.js');
-const Like = require('../models/like.model.js');
-const Post = require('../models/post.model.js');
-const Follow = require('../models/follow.model.js');
+const User = require("../models/user.model.js");
+const Comment = require("../models/comment.model.js");
+const Like = require("../models/like.model.js");
+const Post = require("../models/post.model.js");
+const Follow = require("../models/follow.model.js");
 
-const { setUser } = require('../utils/auth.js');
+const { setUser } = require("../utils/auth.js");
 
 const getUsers = async () => {
     const users = await User.find();
 
-    console.log('Users retrieved successfully:', users);
+    console.log("Users retrieved successfully:", users);
 
     return users;
 };
@@ -17,7 +17,7 @@ const getUsers = async () => {
 const createUser = async (userData) => {
     const result = await User.create(userData);
 
-    console.log('User created successfully:', result);
+    console.log("User created successfully:", result);
 
     return result;
 };
@@ -26,25 +26,21 @@ const loginUser = async (userData) => {
     const user = await User.findOne(userData);
 
     if (!user) {
-        console.log('Login failed: Invalid credentials');
+        console.log("Login failed: Invalid credentials");
         return null;
     }
 
     const token = setUser(user);
 
-    console.log(
-        'Login successful for user:',
-        user.username
-    );
+    console.log("Login successful for user:", user.username);
 
     return {
         user,
-        token
+        token,
     };
 };
 
 const deleteUser = async (userId) => {
-
     // Find user
     const user = await User.findById(userId);
 
@@ -59,17 +55,16 @@ const deleteUser = async (userId) => {
      */
 
     const userPosts = await Post.find({
-        postedBy: userId
+        postedBy: userId,
     });
 
     for (const post of userPosts) {
-
         await Comment.deleteMany({
-            postId: post._id
+            postId: post._id,
         });
 
         await Like.deleteMany({
-            postId: post._id
+            postId: post._id,
         });
     }
 
@@ -80,34 +75,22 @@ const deleteUser = async (userId) => {
      */
 
     const userFollows = await Follow.find({
-        $or: [
-            { follower: userId },
-            { following: userId }
-        ]
+        $or: [{ follower: userId }, { following: userId }],
     });
 
     for (const follow of userFollows) {
-
         // Deleted user was following someone
-        if (
-            follow.follower.toString() ===
-            userId.toString()
-        ) {
-            await User.findByIdAndUpdate(
-                follow.following,
-                { $inc: { followers: -1 } }
-            );
+        if (follow.follower.toString() === userId.toString()) {
+            await User.findByIdAndUpdate(follow.following, {
+                $inc: { followers: -1 },
+            });
         }
 
         // Someone was following deleted user
-        if (
-            follow.following.toString() ===
-            userId.toString()
-        ) {
-            await User.findByIdAndUpdate(
-                follow.follower,
-                { $inc: { following: -1 } }
-            );
+        if (follow.following.toString() === userId.toString()) {
+            await User.findByIdAndUpdate(follow.follower, {
+                $inc: { following: -1 },
+            });
         }
     }
 
@@ -118,15 +101,13 @@ const deleteUser = async (userId) => {
      */
 
     const userComments = await Comment.find({
-        userId
+        userId,
     });
 
     for (const comment of userComments) {
-
-        await Post.findByIdAndUpdate(
-            comment.postId,
-            { $inc: { comments: -1 } }
-        );
+        await Post.findByIdAndUpdate(comment.postId, {
+            $inc: { comments: -1 },
+        });
     }
 
     /*
@@ -136,15 +117,11 @@ const deleteUser = async (userId) => {
      */
 
     const userLikes = await Like.find({
-        userId
+        userId,
     });
 
     for (const like of userLikes) {
-
-        await Post.findByIdAndUpdate(
-            like.postId,
-            { $inc: { likes: -1 } }
-        );
+        await Post.findByIdAndUpdate(like.postId, { $inc: { likes: -1 } });
     }
 
     /*
@@ -155,7 +132,7 @@ const deleteUser = async (userId) => {
 
     // Delete posts
     await Post.deleteMany({
-        postedBy: userId
+        postedBy: userId,
     });
 
     /*
@@ -165,18 +142,15 @@ const deleteUser = async (userId) => {
      */
 
     await Comment.deleteMany({
-        userId
+        userId,
     });
 
     await Like.deleteMany({
-        userId
+        userId,
     });
 
     await Follow.deleteMany({
-        $or: [
-            { follower: userId },
-            { following: userId }
-        ]
+        $or: [{ follower: userId }, { following: userId }],
     });
 
     /*
@@ -191,18 +165,11 @@ const deleteUser = async (userId) => {
 };
 
 const updateUser = async (userId, userData) => {
-    const result = await User.findByIdAndUpdate(
-        userId,
-        userData,
-        {
-            new: true
-        }
-    );
+    const result = await User.findByIdAndUpdate(userId, userData, {
+        new: true,
+    });
 
-    console.log(
-        'User updated successfully:',
-        result
-    );
+    console.log("User updated successfully:", result);
 
     return result;
 };
@@ -212,5 +179,5 @@ module.exports = {
     createUser,
     loginUser,
     deleteUser,
-    updateUser
+    updateUser,
 };

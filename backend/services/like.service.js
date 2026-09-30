@@ -1,10 +1,10 @@
-const Like = require('../models/like.model.js');
-const Post = require('../models/post.model.js');
+const Like = require("../models/like.model.js");
+const Post = require("../models/post.model.js");
 
 const getLikes = async () => {
     const likes = await Like.find({});
 
-    console.log('Likes retrieved successfully:', likes);
+    console.log("Likes retrieved successfully:", likes);
 
     return likes;
 };
@@ -12,12 +12,9 @@ const getLikes = async () => {
 const createLike = async (likeData) => {
     const result = await Like.create(likeData);
 
-    await Post.updateOne(
-        { _id: likeData.postId },
-        { $inc: { likes: 1 } }
-    );
+    await Post.updateOne({ _id: likeData.postId }, { $inc: { likes: 1 } });
 
-    console.log('Like created successfully:', result);
+    console.log("Like created successfully:", result);
 
     return result;
 };
@@ -25,21 +22,18 @@ const createLike = async (likeData) => {
 const deleteLike = async (userId, postId) => {
     const result = await Like.deleteOne({
         userId,
-        postId
+        postId,
     });
 
     if (result.deletedCount > 0) {
-        console.log('Like deleted successfully');
+        console.log("Like deleted successfully");
 
-        await Post.updateOne(
-            { _id: postId },
-            { $inc: { likes: -1 } }
-        );
+        await Post.updateOne({ _id: postId }, { $inc: { likes: -1 } });
 
         return result;
     }
 
-    console.log('No like found to delete');
+    console.log("No like found to delete");
 
     return null;
 };
@@ -47,5 +41,5 @@ const deleteLike = async (userId, postId) => {
 module.exports = {
     getLikes,
     createLike,
-    deleteLike
+    deleteLike,
 };

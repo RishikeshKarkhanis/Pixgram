@@ -1,11 +1,11 @@
-const { getUser } = require('../utils/auth.js');
+const { getUser } = require("../utils/auth.js");
 
 const restrictAccess = (req, res, next) => {
     const uid = req.cookies.uid;
 
     if (!uid) {
         return res.status(401).json({
-            error: 'Unauthorized: No valid user session found'
+            error: "Unauthorized: No valid user session found",
         });
     }
 
@@ -13,7 +13,7 @@ const restrictAccess = (req, res, next) => {
 
     if (!user) {
         return res.status(401).json({
-            error: 'Unauthorized: No valid user session found'
+            error: "Unauthorized: No valid user session found",
         });
     }
 

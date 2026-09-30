@@ -1,6 +1,8 @@
-const { Types: { ObjectId } } = require('mongoose');
+const {
+    Types: { ObjectId },
+} = require("mongoose");
 
-const commentService = require('../services/comment.service.js');
+const commentService = require("../services/comment.service.js");
 
 const getComments = async (req, res) => {
     try {
@@ -8,10 +10,10 @@ const getComments = async (req, res) => {
 
         return res.status(200).json(comments);
     } catch (error) {
-        console.error('Error retrieving comments:', error);
+        console.error("Error retrieving comments:", error);
 
         return res.status(500).json({
-            error: 'Failed to retrieve comments'
+            error: "Failed to retrieve comments",
         });
     }
 };
@@ -22,7 +24,7 @@ const getPostComments = async (req, res) => {
 
         if (!ObjectId.isValid(postId)) {
             return res.status(400).json({
-                error: 'Invalid post ID'
+                error: "Invalid post ID",
             });
         }
 
@@ -30,10 +32,10 @@ const getPostComments = async (req, res) => {
 
         return res.status(200).json(comments);
     } catch (error) {
-        console.error('Error retrieving post comments:', error);
+        console.error("Error retrieving post comments:", error);
 
         return res.status(500).json({
-            error: 'Failed to retrieve post comments'
+            error: "Failed to retrieve post comments",
         });
     }
 };
@@ -44,10 +46,10 @@ const createComment = async (req, res) => {
 
         return res.status(201).json(comment);
     } catch (error) {
-        console.error('Error creating comment:', error);
+        console.error("Error creating comment:", error);
 
         return res.status(500).json({
-            error: 'Failed to create comment'
+            error: "Failed to create comment",
         });
     }
 };
@@ -58,7 +60,7 @@ const deleteComment = async (req, res) => {
 
         if (!ObjectId.isValid(commentId)) {
             return res.status(400).json({
-                error: 'Invalid comment ID'
+                error: "Invalid comment ID",
             });
         }
 
@@ -66,18 +68,18 @@ const deleteComment = async (req, res) => {
 
         if (!result) {
             return res.status(404).json({
-                error: 'Comment not found'
+                error: "Comment not found",
             });
         }
 
         return res.status(200).json({
-            message: 'Comment deleted successfully'
+            message: "Comment deleted successfully",
         });
     } catch (error) {
-        console.error('Error deleting comment:', error);
+        console.error("Error deleting comment:", error);
 
         return res.status(500).json({
-            error: 'Failed to delete comment'
+            error: "Failed to delete comment",
         });
     }
 };
@@ -86,5 +88,5 @@ module.exports = {
     getComments,
     getPostComments,
     createComment,
-    deleteComment
+    deleteComment,
 };

@@ -1,6 +1,8 @@
-const { Types: { ObjectId } } = require('mongoose');
+const {
+    Types: { ObjectId },
+} = require("mongoose");
 
-const postService = require('../services/post.service.js');
+const postService = require("../services/post.service.js");
 
 const getPosts = async (req, res) => {
     try {
@@ -8,10 +10,10 @@ const getPosts = async (req, res) => {
 
         return res.status(200).json(posts);
     } catch (error) {
-        console.error('Error retrieving posts:', error);
+        console.error("Error retrieving posts:", error);
 
         return res.status(500).json({
-            error: 'Failed to retrieve posts'
+            error: "Failed to retrieve posts",
         });
     }
 };
@@ -22,10 +24,10 @@ const createPost = async (req, res) => {
 
         return res.status(201).json(post);
     } catch (error) {
-        console.error('Error creating post:', error);
+        console.error("Error creating post:", error);
 
         return res.status(500).json({
-            error: 'Failed to create post'
+            error: "Failed to create post",
         });
     }
 };
@@ -36,7 +38,7 @@ const deletePost = async (req, res) => {
 
         if (!ObjectId.isValid(id)) {
             return res.status(400).json({
-                error: 'Invalid post ID'
+                error: "Invalid post ID",
             });
         }
 
@@ -44,19 +46,19 @@ const deletePost = async (req, res) => {
 
         if (!post) {
             return res.status(404).json({
-                error: 'Post not found'
+                error: "Post not found",
             });
         }
 
         return res.status(200).json({
-            message: 'Post deleted successfully',
-            post
+            message: "Post deleted successfully",
+            post,
         });
     } catch (error) {
-        console.error('Error deleting post:', error);
+        console.error("Error deleting post:", error);
 
         return res.status(500).json({
-            error: 'Failed to delete post'
+            error: "Failed to delete post",
         });
     }
 };
@@ -64,5 +66,5 @@ const deletePost = async (req, res) => {
 module.exports = {
     getPosts,
     createPost,
-    deletePost
+    deletePost,
 };

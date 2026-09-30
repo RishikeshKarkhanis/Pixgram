@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-const secret = "rk250306"
+const secret = "rk250306";
 
 const uidToUser = new Map();
 
@@ -11,7 +11,7 @@ function setUser(user) {
     return jwt.sign(payload, secret);
 }
 function getUser(token) {
-    if(!token) {
+    if (!token) {
         return null;
     }
     return jwt.verify(token, secret);
