@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { logoutUser } from "../api/auth.api.js";
 
 function Logout() {
-
     useEffect(() => {
         const handleLogout = async () => {
             try {

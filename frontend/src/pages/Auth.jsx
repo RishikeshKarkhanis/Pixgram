@@ -1,6 +1,11 @@
 import { useRef, useState } from "react";
+
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 import { storage } from "../../firebase.js";
+
+import { loginUser, registerUser } from "../api/auth.api.js";
+
 import AuthCard from "../components/ui/AuthCard.jsx";
 
 const DEFAULT_PROFILE_PICTURE =
@@ -24,9 +29,9 @@ function Auth({ mode = "login" }) {
 
     const fileInputRef = useRef(null);
 
-    // -------------------------
-    // Profile picture upload
-    // -------------------------
+    // =====================================================
+    // PROFILE PICTURE UPLOAD
+    // =====================================================
 
     const handleImageUpload = () => {
         if (!username) {
@@ -38,9 +43,11 @@ function Auth({ mode = "login" }) {
     };
 
     const handleFileChange = async (event) => {
-        const file = event.target.files[0];
+        const file = event.target.files?.[0];
 
-        if (!file) return;
+        if (!file) {
+            return;
+        }
 
         try {
             setLoading(true);
@@ -57,79 +64,58 @@ function Auth({ mode = "login" }) {
 
             setImageSrc(url);
             setProfilePicture(url);
-        } catch (err) {
-            console.error("Profile picture upload failed:", err);
+        } catch (error) {
+            console.error("Profile picture upload failed:", error);
+
             setError("Failed to upload profile picture.");
         } finally {
             setLoading(false);
         }
     };
 
-    // -------------------------
-    // Login
-    // -------------------------
+    // =====================================================
+    // LOGIN
+    // =====================================================
 
     const handleLogin = async () => {
         setError("");
 
-        const user = {
-            email,
-            password,
-        };
-
         try {
-            const response = await fetch("/users/login", {
-                method: "POST",
-                body: JSON.stringify(user),
-                headers: {
-                    "Content-Type": "application/json",
-                },
+            await loginUser({
+                email,
+                password,
             });
 
-            if (response.ok) {
-                window.location.href = "/";
-                return;
-            }
+            window.location.href = "/";
+        } catch (error) {
+            console.error("Login failed:", error);
 
-            setError("Incorrect Username Or Password!");
-        } catch (err) {
-            console.error("Login failed:", err);
-            setError("Something went wrong. Please try again.");
+            setError(error.message || "Incorrect Username Or Password!");
         }
     };
 
-    // -------------------------
-    // Register
-    // -------------------------
+    // =====================================================
+    // REGISTER
+    // =====================================================
 
     const handleRegister = async () => {
         setError("");
 
-        const jsonData = {
-            username,
-            email,
-            password,
-            profilePicture: imageSrc,
-        };
-
         try {
-            const response = await fetch("/users/register", {
-                method: "POST",
-                body: JSON.stringify(jsonData),
-                headers: {
-                    "Content-Type": "application/json",
-                },
+            await registerUser({
+                username,
+                email,
+                password,
+                profilePicture: imageSrc,
             });
 
-            if (response.ok) {
-                window.location.replace("/login");
-                return;
-            }
+            // Registration successful.
+            // Go to Auth page in login mode.
+            window.location.href = "/auth";
+        } catch (error) {
+            console.error("Registration failed:", error);
 
-            setError("User Already Exists!");
-        } catch (err) {
-            console.error("Registration failed:", err);
-            setError("Something went wrong. Please try again.");
+            setError(error.message || "User Already Exists!");
         }
     };
 

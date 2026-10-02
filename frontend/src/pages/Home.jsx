@@ -17,13 +17,10 @@ import PostCard from "../components/ui/PostCard.jsx";
 import AddPostModal from "../components/ui/AddPostModal.jsx";
 import SearchModal from "../components/ui/SearchModal.jsx";
 
-
 const DEFAULT_POST_IMAGE =
     "https://firebasestorage.googleapis.com/v0/b/pixgram-469807.firebasestorage.app/o/default%2FPosts%2Fdefault%2Fdefault.jpg?alt=media&token=88af68e1-119b-426f-807e-e5f49e05dfb0";
 
-
 function Home() {
-
     // =====================================================
     // USER
     // =====================================================
@@ -31,20 +28,17 @@ function Home() {
     const [user, setUser] = useState(null);
     const [profilePicture, setProfilePicture] = useState(null);
 
-
     // =====================================================
     // FEED
     // =====================================================
 
     const [posts, setPosts] = useState([]);
 
-
     // =====================================================
     // SEARCH
     // =====================================================
 
     const [showSearch, setShowSearch] = useState(false);
-
 
     // =====================================================
     // ADD POST
@@ -54,25 +48,19 @@ function Home() {
 
     const [newPostId, setNewPostId] = useState("");
 
-    const [newPostImage, setNewPostImage] =
-        useState(DEFAULT_POST_IMAGE);
+    const [newPostImage, setNewPostImage] = useState(DEFAULT_POST_IMAGE);
 
-    const [newPostCaption, setNewPostCaption] =
-        useState("");
+    const [newPostCaption, setNewPostCaption] = useState("");
 
     const fileInputRef = useRef(null);
-
 
     // =====================================================
     // FETCH CURRENT USER
     // =====================================================
 
     useEffect(() => {
-
         const fetchUser = async () => {
-
             try {
-
                 const currentUser = await getCurrentUser();
 
                 if (!currentUser) {
@@ -82,61 +70,37 @@ function Home() {
 
                 setUser(currentUser);
                 setProfilePicture(currentUser.profilePicture);
-
             } catch (error) {
-
-                console.error(
-                    "Error fetching current user:",
-                    error
-                );
+                console.error("Error fetching current user:", error);
 
                 window.location.href = "/auth";
             }
         };
 
-
         fetchUser();
-
     }, []);
-
 
     // =====================================================
     // FETCH FEED
     // =====================================================
 
     useEffect(() => {
-
         if (!user?._id) {
             return;
         }
 
-
         const fetchFeed = async () => {
-
             try {
-
                 const data = await getFeed(user._id);
 
-                setPosts(
-                    Array.isArray(data)
-                        ? data
-                        : []
-                );
-
+                setPosts(Array.isArray(data) ? data : []);
             } catch (error) {
-
-                console.error(
-                    "Error fetching feed:",
-                    error
-                );
+                console.error("Error fetching feed:", error);
             }
         };
 
-
         fetchFeed();
-
     }, [user]);
-
 
     // =====================================================
     // POST UPDATE FROM POSTCARD
@@ -150,36 +114,27 @@ function Home() {
     // =====================================================
 
     const handlePostUpdate = (postId, updates) => {
-
         setPosts((currentPosts) =>
-
             currentPosts.map((post) =>
-
                 post._id === postId
                     ? {
-                        ...post,
-                        ...updates,
-                    }
-                    : post
-
-            )
-
+                          ...post,
+                          ...updates,
+                      }
+                    : post,
+            ),
         );
     };
-
 
     // =====================================================
     // NAVIGATION
     // =====================================================
 
     const goToHome = () => {
-
         window.location.href = "/";
     };
 
-
     const goToProfile = () => {
-
         if (!user?.username) {
             return;
         }
@@ -187,48 +142,36 @@ function Home() {
         window.location.href = `/${user.username}`;
     };
 
-
     const goToEdit = () => {
-
         window.location.href = "/edit";
     };
 
-
     const logout = () => {
-
         window.location.href = "/logout";
     };
-
 
     // =====================================================
     // SEARCH
     // =====================================================
 
     const openSearch = () => {
-
         setShowSearch(true);
     };
 
-
     const closeSearch = () => {
-
         setShowSearch(false);
     };
-
 
     // =====================================================
     // ADD POST
     // =====================================================
 
     const openAddPost = async () => {
-
         if (!user?._id) {
             return;
         }
 
-
         try {
-
             /*
              * Old PixGram flow:
              *
@@ -243,35 +186,24 @@ function Home() {
                 caption: "No Caption",
             });
 
-
             setNewPostId(post._id);
 
-            setNewPostImage(
-                DEFAULT_POST_IMAGE
-            );
+            setNewPostImage(DEFAULT_POST_IMAGE);
 
             setNewPostCaption("");
 
             setShowAddPost(true);
-
         } catch (error) {
-
-            console.error(
-                "Error creating post:",
-                error
-            );
+            console.error("Error creating post:", error);
         }
     };
-
 
     // =====================================================
     // CLOSE / CANCEL ADD POST
     // =====================================================
 
     const closeAddPost = async () => {
-
         setShowAddPost(false);
-
 
         /*
          * If the user created the temporary post
@@ -279,147 +211,87 @@ function Home() {
          */
 
         if (newPostId) {
-
             try {
-
                 await deletePost(newPostId);
-
             } catch (error) {
-
-                console.error(
-                    "Error deleting cancelled post:",
-                    error
-                );
+                console.error("Error deleting cancelled post:", error);
             }
         }
 
-
         setNewPostId("");
 
-        setNewPostImage(
-            DEFAULT_POST_IMAGE
-        );
+        setNewPostImage(DEFAULT_POST_IMAGE);
 
         setNewPostCaption("");
     };
-
 
     // =====================================================
     // IMAGE UPLOAD
     // =====================================================
 
     const handleImageUpload = () => {
-
         fileInputRef.current?.click();
     };
 
-
     const handleFileChange = async (event) => {
-
         const file = event.target.files?.[0];
 
-        if (
-            !file ||
-            !newPostId ||
-            !user?.username
-        ) {
+        if (!file || !newPostId || !user?.username) {
             return;
         }
 
-
         try {
-
             const storageRef = ref(
                 storage,
-                `${user.username}/Posts/${newPostId}/${newPostId}`
+                `${user.username}/Posts/${newPostId}/${newPostId}`,
             );
 
+            await uploadBytes(storageRef, file);
 
-            await uploadBytes(
-                storageRef,
-                file
-            );
-
-
-            const url =
-                await getDownloadURL(
-                    storageRef
-                );
-
+            const url = await getDownloadURL(storageRef);
 
             setNewPostImage(url);
-
         } catch (error) {
-
-            console.error(
-                "Error uploading image:",
-                error
-            );
+            console.error("Error uploading image:", error);
         }
     };
-
 
     // =====================================================
     // SUBMIT POST
     // =====================================================
 
     const submitPost = async () => {
-
         if (!newPostId) {
             return;
         }
 
-
         try {
+            await updatePost(newPostId, {
+                caption: newPostCaption.trim() || "No Caption",
 
-            await updatePost(
-                newPostId,
-                {
-                    caption:
-                        newPostCaption.trim() ||
-                        "No Caption",
-
-                    imageUrl:
-                        newPostImage,
-                }
-            );
-
+                imageUrl: newPostImage,
+            });
 
             /*
              * Refresh feed so newly created
              * post appears immediately.
              */
 
-            const updatedFeed =
-                await getFeed(user._id);
+            const updatedFeed = await getFeed(user._id);
 
-
-            setPosts(
-                Array.isArray(updatedFeed)
-                    ? updatedFeed
-                    : []
-            );
-
+            setPosts(Array.isArray(updatedFeed) ? updatedFeed : []);
 
             setShowAddPost(false);
 
             setNewPostId("");
 
-            setNewPostImage(
-                DEFAULT_POST_IMAGE
-            );
+            setNewPostImage(DEFAULT_POST_IMAGE);
 
             setNewPostCaption("");
-
         } catch (error) {
-
-            console.error(
-                "Error submitting post:",
-                error
-            );
+            console.error("Error submitting post:", error);
         }
     };
-
 
     // =====================================================
     // WAIT FOR USER
@@ -429,13 +301,11 @@ function Home() {
         return null;
     }
 
-
     // =====================================================
     // RENDER
     // =====================================================
 
     return (
-
         <div
             className="
                 min-h-screen
@@ -443,7 +313,6 @@ function Home() {
                 bg-[rgb(244,242,238)]
             "
         >
-
             {/* =================================================
                 NAVBAR
             ================================================= */}
@@ -451,52 +320,36 @@ function Home() {
             <Navbar
                 user={user}
                 profilePicture={profilePicture}
-
                 onHome={goToHome}
                 onProfile={goToProfile}
                 onEdit={goToEdit}
                 onCreatePost={openAddPost}
                 onLogout={logout}
-
                 onSearch={openSearch}
             />
-
 
             {/* =================================================
                 SEARCH MODAL
             ================================================= */}
 
-            {showSearch && (
-
-                <SearchModal
-                    onClose={closeSearch}
-                />
-
-            )}
-
+            {showSearch && <SearchModal onClose={closeSearch} />}
 
             {/* =================================================
                 ADD POST MODAL
             ================================================= */}
 
             {showAddPost && (
-
                 <AddPostModal
                     newPostImage={newPostImage}
                     newPostCaption={newPostCaption}
                     setNewPostCaption={setNewPostCaption}
-
                     fileInputRef={fileInputRef}
-
                     onImageUpload={handleImageUpload}
                     onFileChange={handleFileChange}
-
                     onSubmit={submitPost}
                     onCancel={closeAddPost}
                 />
-
             )}
-
 
             {/* =================================================
                 PAGE LAYOUT
@@ -508,7 +361,6 @@ function Home() {
                     w-full
                 "
             >
-
                 {/* =============================================
                     FIXED SIDEBAR
 
@@ -540,25 +392,15 @@ function Home() {
                         min-[1200px]:w-[225px]
                     "
                 >
-
                     <Sidebar
-
                         onHome={goToHome}
-
                         onProfile={goToProfile}
-
                         onExplore={openSearch}
-
                         onCreatePost={openAddPost}
-
                         onEdit={goToEdit}
-
                         onLogout={logout}
-
                     />
-
                 </aside>
-
 
                 {/* =============================================
                     FEED
@@ -592,7 +434,6 @@ function Home() {
                         min-[1200px]:ml-[225px]
                     "
                 >
-
                     <div
                         className="
                             mx-auto
@@ -605,11 +446,8 @@ function Home() {
                             gap-5
                         "
                     >
-
                         {posts.length > 0 ? (
-
                             posts.map((post) => (
-
                                 <div
                                     key={post._id}
                                     className="
@@ -620,36 +458,21 @@ function Home() {
                                         min-[1000px]:w-[500px]
                                     "
                                 >
-
                                     <PostCard
-
                                         post={post}
-
                                         user={user}
-
-                                        profilePicture={
-                                            profilePicture
-                                        }
-
+                                        profilePicture={profilePicture}
                                         /*
                                          * Home must NEVER
                                          * display the delete X.
                                          */
 
                                         canDelete={false}
-
-                                        onPostUpdate={
-                                            handlePostUpdate
-                                        }
-
+                                        onPostUpdate={handlePostUpdate}
                                     />
-
                                 </div>
-
                             ))
-
                         ) : (
-
                             <p
                                 className="
                                     mt-10
@@ -659,18 +482,12 @@ function Home() {
                             >
                                 No posts available.
                             </p>
-
                         )}
-
                     </div>
-
                 </main>
-
             </div>
-
         </div>
     );
 }
-
 
 export default Home;

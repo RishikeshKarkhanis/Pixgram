@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import {
-    ref,
-    listAll,
-    deleteObject,
-    uploadBytes,
-    getDownloadURL,
-} from "firebase/storage";
+import { ref, listAll, deleteObject, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { storage } from "../../firebase.js";
 
@@ -15,12 +9,7 @@ import { getCurrentUser } from "../api/auth.api.js";
 
 import { getUserById, getUserIdByUsername } from "../api/users.api.js";
 
-import {
-    getMyPosts,
-    createPost,
-    updatePost,
-    deletePost,
-} from "../api/posts.api.js";
+import { getMyPosts, createPost, updatePost, deletePost } from "../api/posts.api.js";
 
 import { isFollowing, createFollow, deleteFollow } from "../api/follows.api.js";
 
@@ -112,16 +101,13 @@ function Profile() {
 
                 if (!currentUser) {
                     window.location.href = "/login";
-
                     return;
                 }
 
                 setUser(currentUser);
-
                 setProfilePicture(currentUser.profilePicture);
             } catch (error) {
                 console.error("Error fetching current user:", error);
-
                 window.location.href = "/login";
             }
         };
@@ -261,9 +247,9 @@ function Profile() {
             currentPosts.map((post) =>
                 post._id === postId
                     ? {
-                          ...post,
-                          ...updates,
-                      }
+                        ...post,
+                        ...updates,
+                    }
                     : post,
             ),
         );
@@ -537,10 +523,7 @@ function Profile() {
              */
 
             if (user?.username) {
-                const folderRef = ref(
-                    storage,
-                    `${user.username}/Posts/${postId}`,
-                );
+                const folderRef = ref(storage, `${user.username}/Posts/${postId}`);
 
                 try {
                     const result = await listAll(folderRef);
@@ -557,10 +540,7 @@ function Profile() {
                      * bring the post back into the UI.
                      */
 
-                    console.error(
-                        "Error deleting Firebase files:",
-                        storageError,
-                    );
+                    console.error("Error deleting Firebase files:", storageError);
                 }
             }
         } catch (error) {
@@ -827,8 +807,8 @@ function Profile() {
                                             </button>
                                         ) : following ? (
                                             /* ===============================
-                                                OTHER USER → FOLLOWING
-                                            =============================== */
+                                                                      OTHER USER → FOLLOWING
+                                                                  =============================== */
 
                                             <button
                                                 type="button"
@@ -854,8 +834,8 @@ function Profile() {
                                             </button>
                                         ) : (
                                             /* ===============================
-                                                OTHER USER → FOLLOW
-                                            =============================== */
+                                                                      OTHER USER → FOLLOW
+                                                                  =============================== */
 
                                             <button
                                                 type="button"
@@ -900,24 +880,15 @@ function Profile() {
                                         "
                                     >
                                         <span>
-                                            <strong>
-                                                {profileOwner.posts ?? 0}
-                                            </strong>{" "}
-                                            Posts
+                                            <strong>{profileOwner.posts ?? 0}</strong> Posts
                                         </span>
 
                                         <span>
-                                            <strong>
-                                                {profileOwner.followers ?? 0}
-                                            </strong>{" "}
-                                            Followers
+                                            <strong>{profileOwner.followers ?? 0}</strong> Followers
                                         </span>
 
                                         <span>
-                                            <strong>
-                                                {profileOwner.following ?? 0}
-                                            </strong>{" "}
-                                            Following
+                                            <strong>{profileOwner.following ?? 0}</strong> Following
                                         </span>
                                     </div>
 

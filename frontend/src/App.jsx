@@ -1,20 +1,16 @@
 import { Routes, Route } from "react-router-dom";
-import Home from './pages/Home/Home.jsx';
-import Login from './pages/Login/Login.jsx';
-import Register from './pages/Register/Register.jsx';
-import Logout from "./pages/Logout/Logout.jsx";
-import Edit from "./pages/Edit/Edit.jsx";
-import DeleteUser from "./pages/DeleteUser/DeleteUser.jsx";
-import Profile from "./pages/Profile/Profile.jsx";
-import './App.css';
-
+import Home from './pages/Home.jsx';
+import Auth from './pages/Auth.jsx';
+import Logout from "./pages/Logout.jsx";
+import Edit from "./pages/Edit.jsx";
+import DeleteUser from "./pages/DeleteUser.jsx";
+import Profile from "./pages/Profile.jsx";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/auth" element={<Auth />} />
       <Route path="/" element={<Home />} />
       <Route path="/:username" element={<Profile />} />
       <Route path="/logout" element={<Logout />} />
