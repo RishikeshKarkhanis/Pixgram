@@ -1,1 +1,11 @@
-frontend/keys/firebase.json
+# Secrets
+backend/.env
+frontend/keys/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local backups
+frontend.old/
+frontend-v2/
