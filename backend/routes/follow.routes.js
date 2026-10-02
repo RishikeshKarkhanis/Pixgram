@@ -1,69 +1,20 @@
-const express = require('express');
+const express = require("express");
 
 const {
     getFollows,
     createFollow,
     deleteFollow,
-    isFollowing
-} = require('../controllers/follow.controller.js');
+    isFollowing,
+} = require("../controllers/follow.controller.js");
 
 const router = express.Router();
 
+router.get("/", getFollows);
 
-// ==================== FOLLOW ROUTES ====================
+router.post("/isfollowing", isFollowing);
 
-// Get all follows
-router.get('/', getFollows);
+router.post("/create", createFollow);
 
-
-// Check if user is following another user
-router.post('/isfollowing', isFollowing);
-
-
-// Create follow
-router.post('/create', async (req, res) => {
-    const followData = req.body;
-
-    const followerId = followData.follower;
-    const followingId = followData.following;
-
-    const data = await createFollow(
-        followingId,
-        followerId
-    );
-
-    if (data) {
-        return res.json(data);
-    }
-
-    return res.status(400).json({
-        message: "Error Creating Follow!"
-    });
-});
-
-
-// Delete follow
-router.delete('/delete', async (req, res) => {
-    const followData = req.body;
-
-    const followerId = followData.follower;
-    const followingId = followData.following;
-
-    const data = await deleteFollow(
-        followingId,
-        followerId
-    );
-
-    if (data) {
-        return res.json({
-            "Follow Deleted": data
-        });
-    }
-
-    return res.status(400).json({
-        message: "Error Deleting Follow!"
-    });
-});
-
+router.delete("/delete", deleteFollow);
 
 module.exports = router;

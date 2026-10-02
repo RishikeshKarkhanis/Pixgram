@@ -1,121 +1,85 @@
-const {
-    Types: { ObjectId },
-} = require("mongoose");
+const { Types: { ObjectId } } = require("mongoose");
 
 const userService = require("../services/user.service.js");
+const asyncHandler = require("../utils/asyncHandler.js");
 
-const getUsers = async (req, res) => {
-    try {
-        const users = await userService.getUsers();
+// Get all users
+const getUsers = asyncHandler(async (req, res) => {
+    const users = await userService.getUsers();
+    return res.status(200).json(users);
+});
 
-        return res.status(200).json(users);
-    } catch (error) {
-        console.error("Error retrieving users:", error);
+// Create user
+const createUser = asyncHandler(async (req, res) => {
+    const user = await userService.createUser(req.body);
 
-        return res.status(500).json({
-            error: "Failed to retrieve users",
+    return res.status(201).json(user);
+});
+
+// Login user
+const loginUser = asyncHandler(async (req, res) => {
+    const result = await userService.loginUser(req.body);
+
+    if (!result) {
+        return res.status(401).json({
+            error: "Invalid credentials",
         });
     }
-};
 
-const createUser = async (req, res) => {
-    try {
-        const user = await userService.createUser(req.body);
+    res.cookie("uid", result.token);
+    return res.status(200).json(result.user);
+});
 
-        return res.status(201).json(user);
-    } catch (error) {
-        console.error("Error creating user:", error);
+// Delete user
+const deleteUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        return res.status(500).json({
-            error: "Failed to create user",
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({
+            error: "Invalid user ID",
         });
     }
-};
 
-const loginUser = async (req, res) => {
-    try {
-        const result = await userService.loginUser(req.body);
+    const result = await userService.deleteUser(id);
 
-        if (!result) {
-            return res.status(401).json({
-                error: "Invalid credentials",
-            });
-        }
-
-        res.cookie("uid", result.token);
-
-        return res.status(200).json(result.user);
-    } catch (error) {
-        console.error("Error logging in user:", error);
-
-        return res.status(500).json({
-            error: "Failed to login",
+    if (!result) {
+        return res.status(404).json({
+            error: "User not found",
         });
     }
-};
 
-const deleteUser = async (req, res) => {
-    try {
-        const { id } = req.params;
+    return res.status(200).json({
+        message: "User deleted successfully",
+    });
+});
 
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({
-                error: "Invalid user ID",
-            });
-        }
+// Update user
+const updateUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        const result = await userService.deleteUser(id);
-
-        if (!result) {
-            return res.status(404).json({
-                error: "User not found",
-            });
-        }
-
-        return res.status(200).json({
-            message: "User deleted successfully",
-        });
-    } catch (error) {
-        console.error("Error deleting user:", error);
-
-        return res.status(500).json({
-            error: "Failed to delete user",
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({
+            error: "Invalid user ID",
         });
     }
-};
 
-const updateUser = async (req, res) => {
-    try {
-        const { id } = req.params;
+    const user = await userService.updateUser(id, req.body);
 
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({
-                error: "Invalid user ID",
-            });
-        }
-
-        const user = await userService.updateUser(id, req.body);
-
-        if (!user) {
-            return res.status(404).json({
-                error: "User not found",
-            });
-        }
-
-        return res.status(200).json(user);
-    } catch (error) {
-        console.error("Error updating user:", error);
-
-        return res.status(500).json({
-            error: "Failed to update user",
+    if (!user) {
+        return res.status(404).json({
+            error: "User not found",
         });
     }
-};
 
-module.exports = {
-    getUsers,
-    createUser,
-    loginUser,
-    deleteUser,
-    updateUser,
-};
+    return res.status(200).json(user);
+});
+
+const logoutUser = asyncHandler(async (req, res) => {
+    res.clearCookie("uid");
+
+    return res.status(200).json({
+        message: "Logged out successfully"
+    });
+});
+
+module.exports = { getUsers, createUser, loginUser, deleteUser, updateUser, logoutUser };

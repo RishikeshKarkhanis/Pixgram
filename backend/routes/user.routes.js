@@ -1,7 +1,14 @@
 const express = require("express");
 
 // Import controller functions
-const { createUser, getUsers, deleteUser, updateUser, loginUser } = require("../controllers/user.controller.js");
+const {
+    createUser,
+    getUsers,
+    deleteUser,
+    updateUser,
+    loginUser,
+    logoutUser,
+} = require("../controllers/user.controller.js");
 const router = express.Router();
 
 // Get all users
@@ -108,14 +115,6 @@ router.get("/getid/:username", async (req, res) => {
 });
 
 // Logout
-router.post("/logout", async (req, res) => {
-    res.clearCookie("uid");
-
-    res.status(200).json({
-        message: "Logged out successfully",
-    });
-
-    console.log("user logged out!");
-});
+router.post("/logout", logoutUser);
 
 module.exports = router;

@@ -42,12 +42,6 @@ app.use(
   require("./routes/notifications.routes.js"),
 );
 
-app.get("/test-error", (req, res, next) => {
-  const error = new Error("Global error handler works!");
-  error.statusCode = 400;
-
-  next(error);
-});
 
 // Error handling middleware to catch and respond to errors
 app.use(errorHandler);

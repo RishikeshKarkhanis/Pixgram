@@ -1,80 +1,79 @@
-const {
-    Types: { ObjectId },
-} = require("mongoose");
+const { Types: { ObjectId } } = require("mongoose");
 
 const likeService = require("../services/like.service.js");
+const asyncHandler = require("../utils/asyncHandler.js");
 
-const getLikes = async (req, res) => {
-    try {
-        const likes = await likeService.getLikes();
+// Get all likes
+const getLikes = asyncHandler(async (req, res) => {
+    const likes = await likeService.getLikes();
+    return res.status(200).json(likes);
+});
 
-        return res.status(200).json(likes);
-    } catch (error) {
-        console.error("Error retrieving likes:", error);
+// Create like
+const createLike = asyncHandler(async (req, res) => {
+    const { userId, postId } = req.body;
 
-        return res.status(500).json({
-            error: "Failed to retrieve likes",
+    if (!ObjectId.isValid(userId) || !ObjectId.isValid(postId)) {
+        return res.status(400).json({
+            error: "Invalid user ID or post ID",
         });
     }
-};
 
-const createLike = async (req, res) => {
-    try {
-        const { userId, postId } = req.body;
+    const like = await likeService.createLike({
+        userId,
+        postId,
+    });
 
-        if (!ObjectId.isValid(userId) || !ObjectId.isValid(postId)) {
-            return res.status(400).json({
-                error: "Invalid user ID or post ID",
-            });
-        }
+    return res.status(201).json(like);
+});
 
-        const like = await likeService.createLike({
-            userId,
-            postId,
-        });
+// Delete like
+const deleteLike = asyncHandler(async (req, res) => {
+    const { userId, postId } = req.body;
 
-        return res.status(201).json(like);
-    } catch (error) {
-        console.error("Error creating like:", error);
-
-        return res.status(500).json({
-            error: "Failed to create like",
+    if (!ObjectId.isValid(userId) || !ObjectId.isValid(postId)) {
+        return res.status(400).json({
+            error: "Invalid user ID or post ID"
         });
     }
-};
 
-const deleteLike = async (req, res) => {
-    try {
-        const { userId, postId } = req.params;
+    const result = await likeService.deleteLike(userId, postId);
 
-        if (!ObjectId.isValid(userId) || !ObjectId.isValid(postId)) {
-            return res.status(400).json({
-                error: "Invalid user ID or post ID",
-            });
-        }
+    if (!result) {
+        return res.status(404).json({
+            error: "Like not found"
+        });
+    }
 
-        const result = await likeService.deleteLike(userId, postId);
+    return res.status(200).json({
+        message: "Like deleted successfully"
+    });
+});
 
-        if (!result) {
-            return res.status(404).json({
-                error: "Like not found",
-            });
-        }
+const toggleLike = asyncHandler(async (req, res) => {
+    const { userId, postId } = req.body;
+
+    if (!ObjectId.isValid(userId) || !ObjectId.isValid(postId)) {
+        return res.status(400).json({
+            error: "Invalid user ID or post ID"
+        });
+    }
+
+    const existingLike = await likeService.findLike(userId, postId);
+
+    if (existingLike) {
+        await likeService.deleteLike(userId, postId);
 
         return res.status(200).json({
-            message: "Like deleted successfully",
-        });
-    } catch (error) {
-        console.error("Error deleting like:", error);
-
-        return res.status(500).json({
-            error: "Failed to delete like",
+            liked: false
         });
     }
-};
 
-module.exports = {
-    getLikes,
-    createLike,
-    deleteLike,
-};
+    await likeService.createLike({ userId, postId });
+
+    return res.status(200).json({
+        liked: true
+    });
+});
+
+module.exports = { getLikes, createLike, deleteLike, toggleLike };

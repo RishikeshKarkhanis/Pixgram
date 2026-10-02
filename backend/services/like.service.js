@@ -38,8 +38,16 @@ const deleteLike = async (userId, postId) => {
     return null;
 };
 
+const findLike = async (userId, postId) => {
+    return await Like.findOne({
+        userId,
+        postId
+    });
+};
+
 module.exports = {
     getLikes,
     createLike,
     deleteLike,
+    findLike
 };

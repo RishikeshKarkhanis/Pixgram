@@ -1,105 +1,71 @@
 const {
     Types: { ObjectId },
 } = require("mongoose");
-
 const followService = require("../services/follow.service.js");
+const asyncHandler = require("../utils/asyncHandler.js");
 
-const getFollows = async (req, res) => {
-    try {
-        const follows = await followService.getFollows();
+// Get all follows
+const getFollows = asyncHandler(async (req, res) => {
+    const follows = await followService.getFollows();
 
-        return res.status(200).json(follows);
-    } catch (error) {
-        console.error("Error retrieving follows:", error);
+    return res.status(200).json(follows);
+});
 
-        return res.status(500).json({
-            error: "Failed to retrieve follows",
+// Check if user is following another user
+const isFollowing = asyncHandler(async (req, res) => {
+    const { following, follower } = req.body;
+
+    if (!ObjectId.isValid(following) || !ObjectId.isValid(follower)) {
+        return res.status(400).json({
+            error: "Invalid user ID",
         });
     }
-};
 
-const isFollowing = async (req, res) => {
-    try {
-        const { followingId, followerId } = req.params;
+    const follow = await followService.isFollowing(following, follower);
 
-        if (!ObjectId.isValid(followingId) || !ObjectId.isValid(followerId)) {
-            return res.status(400).json({
-                error: "Invalid user ID",
-            });
-        }
+    return res.status(200).json({
+        isFollowing: !!follow,
+        follow,
+    });
+});
 
-        const follow = await followService.isFollowing(followingId, followerId);
+// Create follow
+const createFollow = asyncHandler(async (req, res) => {
+    const { following, follower } = req.body;
 
-        return res.status(200).json({
-            isFollowing: !!follow,
-            follow,
-        });
-    } catch (error) {
-        console.error("Error checking follow status:", error);
-
-        return res.status(500).json({
-            error: "Failed to check follow status",
+    if (!ObjectId.isValid(following) || !ObjectId.isValid(follower)) {
+        return res.status(400).json({
+            error: "Invalid user ID",
         });
     }
-};
 
-const createFollow = async (req, res) => {
-    try {
-        const { followingId, followerId } = req.params;
+    const result = await followService.createFollow(following, follower);
 
-        if (!ObjectId.isValid(followingId) || !ObjectId.isValid(followerId)) {
-            return res.status(400).json({
-                error: "Invalid user ID",
-            });
-        }
+    return res.status(201).json(result);
+});
 
-        const result = await followService.createFollow(
-            followingId,
-            followerId,
-        );
+// Delete follow
+const deleteFollow = asyncHandler(async (req, res) => {
+    const { following, follower } = req.body;
 
-        return res.status(201).json(result);
-    } catch (error) {
-        console.error("Error creating follow:", error);
-
-        return res.status(500).json({
-            error: "Failed to follow user",
+    if (!ObjectId.isValid(following) || !ObjectId.isValid(follower)) {
+        return res.status(400).json({
+            error: "Invalid user ID",
         });
     }
-};
 
-const deleteFollow = async (req, res) => {
-    try {
-        const { followingId, followerId } = req.params;
+    const result = await followService.deleteFollow(following, follower);
 
-        if (!ObjectId.isValid(followingId) || !ObjectId.isValid(followerId)) {
-            return res.status(400).json({
-                error: "Invalid user ID",
-            });
-        }
-
-        const result = await followService.deleteFollow(
-            followingId,
-            followerId,
-        );
-
-        if (result.deletedCount === 0) {
-            return res.status(404).json({
-                error: "Follow relationship not found",
-            });
-        }
-
-        return res.status(200).json({
-            message: "User unfollowed successfully",
-        });
-    } catch (error) {
-        console.error("Error deleting follow:", error);
-
-        return res.status(500).json({
-            error: "Failed to unfollow user",
+    if (result.deletedCount === 0) {
+        return res.status(404).json({
+            error: "Follow relationship not found",
         });
     }
-};
+
+    return res.status(200).json({
+        message: "User unfollowed successfully",
+    });
+});
 
 module.exports = {
     getFollows,
