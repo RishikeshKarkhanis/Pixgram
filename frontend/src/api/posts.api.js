@@ -31,3 +31,8 @@ export const deletePost = (postId) => {
         method: "DELETE",
     });
 };
+
+// Get a single post
+export const getPostById = (postId) => {
+    return apiClient(`/posts/${postId}`);
+};

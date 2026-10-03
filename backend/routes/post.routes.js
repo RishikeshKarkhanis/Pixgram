@@ -107,4 +107,45 @@ router.put("/update/:id", async (req, res) => {
 // Delete post
 router.delete("/delete/:id", deletePost);
 
+// Get a single post
+router.get("/:id", async (req, res) => {
+    try {
+        const postId = req.params.id;
+
+        const post = await Post.findById(postId)
+            .populate("postedBy", "username profilePicture")
+            .lean();
+
+        if (!post) {
+            return res.status(404).json({
+                error: "Post not found",
+            });
+        }
+
+        const uid = req.user?._doc?._id;
+
+        let hasLiked = false;
+
+        if (uid) {
+            const liked = await Like.exists({
+                postId: post._id,
+                userId: uid,
+            });
+
+            hasLiked = !!liked;
+        }
+
+        res.json({
+            ...post,
+            hasLiked,
+        });
+    } catch (error) {
+        console.error("Error fetching single post:", error);
+
+        res.status(500).json({
+            error: "Error fetching post",
+        });
+    }
+});
+
 module.exports = router;

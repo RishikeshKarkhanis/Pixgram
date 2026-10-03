@@ -1,9 +1,18 @@
 const Notification = require("../models/notifications.model.js");
 
-const getNotifications = async () => {
-    const notifications = await Notification.find({});
+const getNotifications = async (userId) => {
+    const notifications = await Notification.find({
+        recipient: userId,
+    })
+        .populate("sender", "username profilePicture")
+        .populate("post", "imageUrl caption")
+        .populate("comment", "content")
+        .sort({ createdAt: -1 });
 
-    console.log("Notifications retrieved successfully:", notifications);
+    console.log(
+        `Notifications for user ${userId} retrieved successfully:`,
+        notifications,
+    );
 
     return notifications;
 };
@@ -23,7 +32,6 @@ const deleteNotification = async (notificationId) => {
 
     if (result.deletedCount > 0) {
         console.log("Notification deleted successfully");
-
         return result;
     }
 
@@ -32,8 +40,36 @@ const deleteNotification = async (notificationId) => {
     return null;
 };
 
+const getUnreadNotificationCount = async (userId) => {
+    const count = await Notification.countDocuments({
+        recipient: userId,
+        read: false,
+    });
+
+    return count;
+};
+
+const markNotificationAsRead = async (notificationId, userId) => {
+    const notification = await Notification.findOneAndUpdate(
+        {
+            _id: notificationId,
+            recipient: userId,
+        },
+        {
+            $set: { read: true },
+        },
+        {
+            new: true,
+        }
+    );
+
+    return notification;
+};
+
 module.exports = {
     getNotifications,
     createNotification,
     deleteNotification,
+    getUnreadNotificationCount,
+    markNotificationAsRead,
 };

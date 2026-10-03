@@ -1,5 +1,6 @@
 const Comment = require("../models/comment.model.js");
 const Post = require("../models/post.model.js");
+const notificationService = require("./notification.service.js");
 
 const getComments = async () => {
     const comments = await Comment.find({});
@@ -31,6 +32,22 @@ const createComment = async (commentData) => {
         { _id: commentData.postId },
         { $inc: { comments: 1 } },
     );
+
+    const post = await Post.findById(commentData.postId)
+        .select("postedBy");
+
+    if (
+        post &&
+        String(post.postedBy) !== String(commentData.userId)
+    ) {
+        await notificationService.createNotification({
+            recipient: post.postedBy,
+            sender: commentData.userId,
+            type: "comment",
+            post: commentData.postId,
+            comment: result._id,
+        });
+    }
 
     return result;
 };

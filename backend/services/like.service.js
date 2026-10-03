@@ -1,5 +1,6 @@
 const Like = require("../models/like.model.js");
 const Post = require("../models/post.model.js");
+const notificationService = require("./notification.service.js");
 
 const getLikes = async () => {
     const likes = await Like.find({});
@@ -12,7 +13,25 @@ const getLikes = async () => {
 const createLike = async (likeData) => {
     const result = await Like.create(likeData);
 
-    await Post.updateOne({ _id: likeData.postId }, { $inc: { likes: 1 } });
+    await Post.updateOne(
+        { _id: likeData.postId },
+        { $inc: { likes: 1 } }
+    );
+
+    const post = await Post.findById(likeData.postId)
+        .select("postedBy");
+
+    if (
+        post &&
+        String(post.postedBy) !== String(likeData.userId)
+    ) {
+        await notificationService.createNotification({
+            recipient: post.postedBy,
+            sender: likeData.userId,
+            type: "like",
+            post: likeData.postId,
+        });
+    }
 
     console.log("Like created successfully:", result);
 

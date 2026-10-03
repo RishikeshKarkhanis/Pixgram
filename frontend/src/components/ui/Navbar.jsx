@@ -1,5 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+import {
+    getNotifications,
+    getUnreadNotificationCount,
+    markNotificationAsRead,
+} from "../../api/notifications.api.js";
 
 import {
     Search,
@@ -12,20 +18,37 @@ import {
 } from "lucide-react";
 
 
-function Navbar({
-    user,
-    onSearch,
-    onNotifications,
-    onCreatePost,
-}) {
-
+function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
     const navigate = useNavigate();
 
-    const [profileOpen, setProfileOpen] =
-        useState(false);
+    const [profileOpen, setProfileOpen] = useState(false);
+    const [notificationOpen, setNotificationOpen] = useState(false);
 
-    const [notificationOpen, setNotificationOpen] =
-        useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [notificationsLoading, setNotificationsLoading] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+
+    // =====================================================
+    // LOAD UNREAD COUNT
+    // =====================================================
+
+    useEffect(() => {
+        const loadUnreadCount = async () => {
+            try {
+                const data = await getUnreadNotificationCount();
+
+                setUnreadCount(data?.count || 0);
+            } catch (error) {
+                console.error(
+                    "Failed to fetch unread notification count:",
+                    error
+                );
+            }
+        };
+
+        loadUnreadCount();
+    }, []);
 
 
     // =====================================================
@@ -33,7 +56,6 @@ function Navbar({
     // =====================================================
 
     const goHome = () => {
-
         setProfileOpen(false);
         setNotificationOpen(false);
 
@@ -46,7 +68,6 @@ function Navbar({
     // =====================================================
 
     const goToProfile = () => {
-
         setProfileOpen(false);
         setNotificationOpen(false);
 
@@ -63,7 +84,6 @@ function Navbar({
     // =====================================================
 
     const goToEdit = () => {
-
         setProfileOpen(false);
         setNotificationOpen(false);
 
@@ -76,7 +96,6 @@ function Navbar({
     // =====================================================
 
     const handleSearch = () => {
-
         setProfileOpen(false);
         setNotificationOpen(false);
 
@@ -88,15 +107,103 @@ function Navbar({
     // NOTIFICATIONS
     // =====================================================
 
-    const handleNotifications = () => {
-
+    const handleNotifications = async () => {
         setProfileOpen(false);
 
-        setNotificationOpen(
-            (previous) => !previous
-        );
+        const willOpen = !notificationOpen;
+
+        setNotificationOpen(willOpen);
+
+        if (!willOpen) {
+            return;
+        }
+
+        try {
+            setNotificationsLoading(true);
+
+            const data = await getNotifications();
+
+            const notificationList =
+                Array.isArray(data) ? data : [];
+
+            setNotifications(notificationList);
+
+            // Keep badge synchronized with backend
+            const unread = notificationList.filter(
+                (notification) => notification.read === false
+            ).length;
+
+            setUnreadCount(unread);
+
+        } catch (error) {
+            console.error(
+                "Failed to fetch notifications:",
+                error
+            );
+
+            setNotifications([]);
+
+        } finally {
+            setNotificationsLoading(false);
+        }
 
         onNotifications?.();
+    };
+
+
+    // =====================================================
+    // MARK NOTIFICATION AS READ
+    // =====================================================
+
+    const handleNotificationClick = async (notification) => {
+        try {
+            // Mark as read if unread
+            if (!notification.read) {
+                await markNotificationAsRead(notification._id);
+
+                setNotifications((previous) =>
+                    previous.map((item) =>
+                        item._id === notification._id
+                            ? {
+                                ...item,
+                                read: true,
+                            }
+                            : item
+                    )
+                );
+
+                setUnreadCount((previous) =>
+                    Math.max(previous - 1, 0)
+                );
+            }
+
+            // Close notification dropdown
+            setNotificationOpen(false);
+
+            // Follow notification → sender's profile
+            if (
+                notification.type === "follow" &&
+                notification.sender?.username
+            ) {
+                navigate(`/${notification.sender.username}`);
+                return;
+            }
+
+            // Like / Comment notification → post
+            if (
+                (notification.type === "like" ||
+                    notification.type === "comment") &&
+                notification.post?._id
+            ) {
+                navigate(`/singlepost/${notification.post._id}`);
+                return;
+            }
+        } catch (error) {
+            console.error(
+                "Failed to handle notification click:",
+                error
+            );
+        }
     };
 
 
@@ -105,12 +212,9 @@ function Navbar({
     // =====================================================
 
     const handleProfile = () => {
-
         setNotificationOpen(false);
 
-        setProfileOpen(
-            (previous) => !previous
-        );
+        setProfileOpen((previous) => !previous);
     };
 
 
@@ -119,7 +223,6 @@ function Navbar({
     // =====================================================
 
     const handleCreatePost = () => {
-
         setProfileOpen(false);
         setNotificationOpen(false);
 
@@ -132,7 +235,6 @@ function Navbar({
     // =====================================================
 
     const handleLogout = () => {
-
         setProfileOpen(false);
         setNotificationOpen(false);
 
@@ -141,7 +243,6 @@ function Navbar({
 
 
     return (
-
         <nav
             className="
                 fixed
@@ -151,7 +252,6 @@ function Navbar({
 
                 flex
                 w-full
-
                 items-center
                 justify-between
 
@@ -175,18 +275,15 @@ function Navbar({
                     items-center
                 "
             >
-
                 <button
                     type="button"
                     onClick={goHome}
-
                     className="
                         border-none
                         bg-transparent
                         p-0
                     "
                 >
-
                     <h1
                         className="
                             m-0
@@ -194,7 +291,6 @@ function Navbar({
                             leading-none
                         "
                     >
-
                         <span className="text-green-600">
                             Pix
                         </span>
@@ -202,11 +298,8 @@ function Navbar({
                         <span className="text-black">
                             Gram
                         </span>
-
                     </h1>
-
                 </button>
-
             </div>
 
 
@@ -231,10 +324,8 @@ function Navbar({
                     type="button"
                     onClick={handleSearch}
                     aria-label="Search"
-
                     className="
                         flex
-
                         h-[50px]
                         w-[50px]
 
@@ -253,9 +344,7 @@ function Navbar({
                         hover:text-[#28a745]
                     "
                 >
-
                     <Search size={21} />
-
                 </button>
 
 
@@ -270,15 +359,12 @@ function Navbar({
                         items-center
                     "
                 >
-
                     <button
                         type="button"
                         onClick={handleNotifications}
                         aria-label="Notifications"
-
                         className="
                             flex
-
                             h-[50px]
                             w-[50px]
 
@@ -298,10 +384,48 @@ function Navbar({
                         "
                     >
 
-                        <Bell size={21} />
+                        <div className="relative">
+
+                            <Bell size={21} />
+
+                            {/* UNREAD BADGE */}
+
+                            {unreadCount > 0 && (
+                                <span
+                                    className="
+                                        absolute
+                                        -right-[7px]
+                                        -top-[7px]
+
+                                        flex
+
+                                        h-[18px]
+                                        min-w-[18px]
+
+                                        items-center
+                                        justify-center
+
+                                        rounded-full
+
+                                        bg-green-600
+
+                                        px-[4px]
+
+                                        text-[10px]
+                                        font-bold
+                                        leading-none
+                                        text-white
+                                    "
+                                >
+                                    {unreadCount > 99
+                                        ? "99+"
+                                        : unreadCount}
+                                </span>
+                            )}
+
+                        </div>
 
                     </button>
-
                 </div>
 
 
@@ -312,23 +436,16 @@ function Navbar({
                 <div
                     className="
                         relative
-
                         flex
                         items-center
-
                         pb-[3px]
                     "
                 >
 
                     <img
-                        src={
-                            user?.profilePicture
-                        }
-
+                        src={user?.profilePicture}
                         alt="Profile"
-
                         onClick={handleProfile}
-
                         className="
                             ml-[10px]
 
@@ -348,12 +465,10 @@ function Navbar({
 
                     {/* =================================================
                         PROFILE DROPDOWN
-
                         MOBILE ONLY
                     ================================================= */}
 
                     {profileOpen && (
-
                         <div
                             className="
                                 absolute
@@ -391,7 +506,6 @@ function Navbar({
                                     <button
                                         type="button"
                                         onClick={goHome}
-
                                         className="
                                             flex
                                             w-full
@@ -415,13 +529,11 @@ function Navbar({
                                             hover:text-[#28a745]
                                         "
                                     >
-
                                         <House size={19} />
 
                                         <span>
                                             Home
                                         </span>
-
                                     </button>
 
                                 </li>
@@ -434,7 +546,6 @@ function Navbar({
                                     <button
                                         type="button"
                                         onClick={goToProfile}
-
                                         className="
                                             flex
                                             w-full
@@ -458,13 +569,11 @@ function Navbar({
                                             hover:text-[#28a745]
                                         "
                                     >
-
                                         <User size={19} />
 
                                         <span>
                                             Profile
                                         </span>
-
                                     </button>
 
                                 </li>
@@ -477,7 +586,6 @@ function Navbar({
                                     <button
                                         type="button"
                                         onClick={goToEdit}
-
                                         className="
                                             flex
                                             w-full
@@ -501,13 +609,11 @@ function Navbar({
                                             hover:text-[#28a745]
                                         "
                                     >
-
                                         <Pencil size={19} />
 
                                         <span>
                                             Edit
                                         </span>
-
                                     </button>
 
                                 </li>
@@ -520,7 +626,6 @@ function Navbar({
                                     <button
                                         type="button"
                                         onClick={handleCreatePost}
-
                                         className="
                                             flex
                                             w-full
@@ -544,13 +649,11 @@ function Navbar({
                                             hover:text-[#28a745]
                                         "
                                     >
-
                                         <CirclePlus size={19} />
 
                                         <span>
                                             Add Post
                                         </span>
-
                                     </button>
 
                                 </li>
@@ -563,7 +666,6 @@ function Navbar({
                                     <button
                                         type="button"
                                         onClick={handleLogout}
-
                                         className="
                                             flex
                                             w-full
@@ -586,13 +688,11 @@ function Navbar({
                                             hover:bg-red-50
                                         "
                                     >
-
                                         <LogOut size={19} />
 
                                         <span>
                                             Logout
                                         </span>
-
                                     </button>
 
                                 </li>
@@ -600,7 +700,6 @@ function Navbar({
                             </ul>
 
                         </div>
-
                     )}
 
                 </div>
@@ -610,14 +709,9 @@ function Navbar({
 
             {/* =================================================
                 NOTIFICATION DROPDOWN
-
-                FIXED TO SCREEN RIGHT EDGE
-
-                Works on desktop + mobile.
             ================================================= */}
 
             {notificationOpen && (
-
                 <div
                     className="
                         fixed
@@ -642,47 +736,256 @@ function Navbar({
 
                     <ul
                         className="
-                            my-[5px]
-
+                            max-h-[420px]
                             w-full
-
-                            list-none
-
-                            p-0
+                            overflow-y-auto
                         "
                     >
 
-                        <li
-                            className="
-                                my-[5px]
-                            "
-                        >
+                        {/* LOADING */}
 
-                            <p
+                        {notificationsLoading ? (
+
+                            <li
                                 className="
-                                    m-0
-
                                     px-4
-                                    py-2
+                                    py-6
 
-                                    text-[18px]
-                                    text-black
+                                    text-center
+                                    text-sm
+                                    text-gray-500
                                 "
                             >
-                                No new notifications.
-                            </p>
+                                Loading...
+                            </li>
 
-                        </li>
+                        ) : notifications.length === 0 ? (
+
+                            /* EMPTY */
+
+                            <li
+                                className="
+                                    px-4
+                                    py-6
+
+                                    text-center
+                                    text-sm
+                                    text-gray-500
+                                "
+                            >
+                                No notifications yet.
+                            </li>
+
+                        ) : (
+
+                            /* NOTIFICATIONS */
+
+                            notifications.map((notification) => (
+
+                                <li
+                                    key={notification._id}
+
+                                    onClick={() =>
+                                        handleNotificationClick(
+                                            notification
+                                        )
+                                    }
+
+                                    className={`
+                                        flex
+                                        cursor-pointer
+                                        gap-3
+
+                                        border-b
+                                        border-gray-100
+
+                                        px-4
+                                        py-3
+
+                                        hover:bg-gray-50
+
+                                        ${!notification.read
+                                            ? "bg-green-50"
+                                            : "bg-white"
+                                        }
+                                    `}
+                                >
+
+                                    {/* POST IMAGE */}
+
+                                    {notification.post?.imageUrl && (
+                                        <img
+                                            src={
+                                                notification
+                                                    .post
+                                                    .imageUrl
+                                            }
+                                            alt="Post"
+
+                                            className="
+                                                h-11
+                                                w-11
+                                                shrink-0
+
+                                                rounded-lg
+
+                                                object-cover
+                                            "
+                                        />
+                                    )}
+
+
+                                    {/* NOTIFICATION CONTENT */}
+
+                                    <div
+                                        className="
+                                            min-w-0
+                                            flex-1
+                                        "
+                                    >
+
+                                        {/* FOLLOW */}
+
+                                        {notification.type ===
+                                            "follow" && (
+
+                                                <p
+                                                    className="
+                                                    text-sm
+                                                    text-gray-800
+                                                "
+                                                >
+                                                    <span
+                                                        className="
+                                                        font-semibold
+                                                    "
+                                                    >
+                                                        {
+                                                            notification
+                                                                .sender
+                                                                ?.username
+                                                        }
+                                                    </span>{" "}
+                                                    started following
+                                                    you.
+                                                </p>
+
+                                            )}
+
+
+                                        {/* LIKE */}
+
+                                        {notification.type ===
+                                            "like" && (
+
+                                                <p
+                                                    className="
+                                                    text-sm
+                                                    text-gray-800
+                                                "
+                                                >
+                                                    <span
+                                                        className="
+                                                        font-semibold
+                                                    "
+                                                    >
+                                                        {
+                                                            notification
+                                                                .sender
+                                                                ?.username
+                                                        }
+                                                    </span>{" "}
+                                                    liked your post.
+                                                </p>
+
+                                            )}
+
+
+                                        {/* COMMENT */}
+
+                                        {notification.type ===
+                                            "comment" && (
+
+                                                <>
+
+                                                    <p
+                                                        className="
+                                                        text-sm
+                                                        text-gray-800
+                                                    "
+                                                    >
+                                                        <span
+                                                            className="
+                                                            font-semibold
+                                                        "
+                                                        >
+                                                            {
+                                                                notification
+                                                                    .sender
+                                                                    ?.username
+                                                            }
+                                                        </span>{" "}
+                                                        commented on your
+                                                        post.
+                                                    </p>
+
+
+                                                    {notification.comment
+                                                        ?.content && (
+
+                                                            <p
+                                                                className="
+                                                            mt-1
+                                                            truncate
+                                                            text-sm
+                                                            text-gray-500
+                                                        "
+                                                            >
+                                                                "
+                                                                {
+                                                                    notification
+                                                                        .comment
+                                                                        .content
+                                                                }
+                                                                "
+                                                            </p>
+
+                                                        )}
+
+                                                </>
+
+                                            )}
+
+
+                                        {/* TIME */}
+
+                                        <p
+                                            className="
+                                                mt-1
+                                                text-xs
+                                                text-gray-400
+                                            "
+                                        >
+                                            {new Date(
+                                                notification.createdAt
+                                            ).toLocaleString()}
+                                        </p>
+
+                                    </div>
+
+                                </li>
+
+                            ))
+
+                        )}
 
                     </ul>
 
                 </div>
-
             )}
 
         </nav>
     );
 }
-
 
 export default Navbar;
