@@ -8,6 +8,8 @@ import {
     MoreHorizontal,
     X,
     Trash2,
+    ChevronDown,
+    ChevronUp,
 } from "lucide-react";
 
 import { toggleLike } from "../../api/likes.api.js";
@@ -32,11 +34,11 @@ function PostWindow({
     // =====================================================
 
     const [hasLiked, setHasLiked] = useState(
-        post?.hasLiked || false,
+        post?.hasLiked || false
     );
 
     const [likeCount, setLikeCount] = useState(
-        post?.likes || 0,
+        post?.likes || 0
     );
 
     // =====================================================
@@ -68,6 +70,16 @@ function PostWindow({
     const [showMenu, setShowMenu] = useState(false);
 
     // =====================================================
+    // MOBILE COLLAPSE
+    // =====================================================
+
+    const [imageCollapsed, setImageCollapsed] =
+        useState(false);
+
+    const [commentsCollapsed, setCommentsCollapsed] =
+        useState(false);
+
+    // =====================================================
     // LOAD COMMENTS
     // =====================================================
 
@@ -86,12 +98,12 @@ function PostWindow({
                 setComments(
                     Array.isArray(result)
                         ? result
-                        : [],
+                        : []
                 );
             } catch (error) {
                 console.error(
                     "Failed to fetch comments:",
-                    error,
+                    error
                 );
 
                 setComments([]);
@@ -115,7 +127,7 @@ function PostWindow({
         try {
             const result = await toggleLike(
                 user._id,
-                post._id,
+                post._id
             );
 
             const newLikeCount = result.liked
@@ -129,7 +141,7 @@ function PostWindow({
         } catch (error) {
             console.error(
                 "Failed to toggle like:",
-                error,
+                error
             );
 
             return false;
@@ -138,7 +150,6 @@ function PostWindow({
 
     // =====================================================
     // DOUBLE CLICK
-    // Same behavior as PostCard
     // =====================================================
 
     const handleDoubleClick = async () => {
@@ -206,7 +217,7 @@ function PostWindow({
         } catch (error) {
             console.error(
                 "Failed to create comment:",
-                error,
+                error
             );
         } finally {
             setCommentSubmitting(false);
@@ -224,13 +235,13 @@ function PostWindow({
             setComments((current) =>
                 current.filter(
                     (comment) =>
-                        comment._id !== commentId,
-                ),
+                        comment._id !== commentId
+                )
             );
         } catch (error) {
             console.error(
                 "Failed to delete comment:",
-                error,
+                error
             );
         }
     };
@@ -263,7 +274,7 @@ function PostWindow({
             if (error?.name !== "AbortError") {
                 console.error(
                     "Failed to share post:",
-                    error,
+                    error
                 );
             }
         }
@@ -290,8 +301,28 @@ function PostWindow({
 
         onDeletePost?.(
             post._id,
-            post.postedBy?._id,
+            post.postedBy?._id
         );
+    };
+
+    // =====================================================
+    // MOBILE COLLAPSE
+    // =====================================================
+
+    const handleImageCollapse = () => {
+        setImageCollapsed((current) => !current);
+
+        if (commentsCollapsed) {
+            setCommentsCollapsed(false);
+        }
+    };
+
+    const handleCommentsCollapse = () => {
+        setCommentsCollapsed((current) => !current);
+
+        if (imageCollapsed) {
+            setImageCollapsed(false);
+        }
     };
 
     // =====================================================
@@ -307,30 +338,47 @@ function PostWindow({
     // =====================================================
 
     return (
-        <div className="flex w-full justify-center px-4 py-8">
-
+        <div
+            className="
+                flex
+                min-h-full
+                w-full
+                justify-center
+                px-0
+                pt-8
+                sm:px-4
+                sm:py-8
+            "
+        >
             {/* =================================================
                 WINDOW
             ================================================= */}
 
             <article
-                className="
+                className={`
                     relative
                     flex
-                    h-[min(80vh,700px)]
+                    min-h-0
                     w-full
                     max-w-[1100px]
                     flex-col
                     overflow-hidden
-                    rounded-[8px]
                     bg-white
                     shadow-2xl
+                    sm:rounded-[8px]
+
+                    ${
+                        commentsCollapsed
+                            ? "h-auto"
+                            : "h-[calc(100dvh-76px)]"
+                    }
+
+                    md:h-[min(80vh,700px)]
                     md:grid
                     md:grid-cols-[1.1fr_0.9fr]
                     md:grid-rows-[1fr_auto]
-                "
+                `}
             >
-
                 {/* =================================================
                     CLOSE
                 ================================================= */}
@@ -343,7 +391,7 @@ function PostWindow({
                         absolute
                         right-3
                         top-3
-                        z-30
+                        z-50
                         flex
                         h-9
                         w-9
@@ -364,29 +412,85 @@ function PostWindow({
                 ================================================= */}
 
                 <div
-                    className="
+                    className={`
                         relative
                         flex
-                        min-h-0
-                        cursor-pointer
+                        w-full
+                        shrink-0
                         items-center
                         justify-center
                         overflow-hidden
                         bg-black
                         md:row-start-1
                         md:col-start-1
-                    "
+                        md:h-full
+                        md:min-h-0
+                        md:shrink
+
+                        ${
+                            imageCollapsed
+                                ? "h-10"
+                                : "h-[42dvh]"
+                        }
+                    `}
                     onDoubleClick={handleDoubleClick}
                 >
-                    <img
-                        src={post.imageUrl}
-                        alt={post.caption || "Post"}
+                    {/* IMAGE */}
+
+                    {!imageCollapsed && (
+                        <img
+                            src={post.imageUrl}
+                            alt={
+                                post.caption ||
+                                "Post"
+                            }
+                            className="
+                                h-full
+                                w-full
+                                object-contain
+                            "
+                        />
+                    )}
+
+                    {/* =================================================
+                        MOBILE IMAGE COLLAPSE BUTTON
+                    ================================================= */}
+
+                    <button
+                        type="button"
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            handleImageCollapse();
+                        }}
+                        aria-label={
+                            imageCollapsed
+                                ? "Show image"
+                                : "Collapse image"
+                        }
                         className="
-                            h-full
-                            w-full
-                            object-contain
+                            absolute
+                            bottom-1
+                            left-1/2
+                            z-20
+                            flex
+                            -translate-x-1/2
+                            items-center
+                            justify-center
+                            rounded-full
+                            border-none
+                            bg-white/20
+                            p-1
+                            text-white
+                            backdrop-blur-sm
+                            md:hidden
                         "
-                    />
+                    >
+                        {imageCollapsed ? (
+                            <ChevronDown size={20} />
+                        ) : (
+                            <ChevronUp size={20} />
+                        )}
+                    </button>
 
                     {/* =================================================
                         LIKE HEART
@@ -408,7 +512,7 @@ function PostWindow({
                     )}
 
                     {/* =================================================
-                        HEART CRACK / UNLIKE
+                        HEART CRACK
                     ================================================= */}
 
                     {showHeartCrack && (
@@ -427,22 +531,29 @@ function PostWindow({
                 </div>
 
                 {/* =================================================
-                    COMMENTS
+                    COMMENTS / DETAILS
                 ================================================= */}
 
                 <div
-                    className="
+                    className={`
                         flex
                         min-h-0
                         flex-col
-                        border-l
-                        border-gray-200
                         bg-white
+                        md:flex-1
+                        md:overflow-hidden
+                        md:border-l
+                        md:border-gray-200
                         md:row-start-1
                         md:col-start-2
-                    "
-                >
 
+                        ${
+                            commentsCollapsed
+                                ? "flex-none"
+                                : "flex-1"
+                        }
+                    `}
+                >
                     {/* =============================================
                         POST HEADER
                     ============================================= */}
@@ -509,7 +620,7 @@ function PostWindow({
                                     onClick={() =>
                                         setShowMenu(
                                             (current) =>
-                                                !current,
+                                                !current
                                         )
                                     }
                                     className="
@@ -571,255 +682,305 @@ function PostWindow({
                                 )}
                             </div>
                         )}
-                    </div>
 
-                    {/* =============================================
-                        CAPTION + COMMENTS
-                    ============================================= */}
-
-                    <div
-                        className="
-                            min-h-0
-                            flex-1
-                            overflow-y-auto
-                            px-4
-                            py-4
-                        "
-                    >
-
-                        {/* CAPTION */}
-
-                        {post.caption && (
-                            <div
-                                className="
-                                    mb-5
-                                    flex
-                                    gap-3
-                                "
-                            >
-                                <img
-                                    src={
-                                        post.postedBy
-                                            ?.profilePicture
-                                    }
-                                    alt=""
-                                    className="
-                                        h-8
-                                        w-8
-                                        shrink-0
-                                        rounded-full
-                                        object-cover
-                                    "
-                                />
-
-                                <p
-                                    className="
-                                        m-0
-                                        text-sm
-                                        leading-6
-                                        text-gray-800
-                                    "
-                                >
-                                    <span
-                                        className="
-                                            mr-2
-                                            font-semibold
-                                        "
-                                    >
-                                        {
-                                            post.postedBy
-                                                ?.username
-                                        }
-                                    </span>
-
-                                    {post.caption}
-                                </p>
-                            </div>
-                        )}
-
-                        {/* COMMENTS */}
-
-                        {commentsLoading ? (
-                            <p
-                                className="
-                                    py-8
-                                    text-center
-                                    text-sm
-                                    text-gray-500
-                                "
-                            >
-                                Loading comments...
-                            </p>
-                        ) : comments.length === 0 ? (
-                            <p
-                                className="
-                                    py-8
-                                    text-center
-                                    text-sm
-                                    text-gray-500
-                                "
-                            >
-                                No comments yet.
-                            </p>
-                        ) : (
-                            <div className="space-y-5">
-                                {comments.map(
-                                    (comment) => (
-                                        <div
-                                            key={
-                                                comment._id
-                                            }
-                                            className="
-                                                flex
-                                                gap-3
-                                            "
-                                        >
-                                            <img
-                                                src={
-                                                    comment
-                                                        .userId
-                                                        ?.profilePicture
-                                                }
-                                                alt=""
-                                                className="
-                                                    h-8
-                                                    w-8
-                                                    shrink-0
-                                                    rounded-full
-                                                    object-cover
-                                                "
-                                            />
-
-                                            <div
-                                                className="
-                                                    min-w-0
-                                                    flex-1
-                                                "
-                                            >
-                                                <p
-                                                    className="
-                                                        m-0
-                                                        text-sm
-                                                        text-gray-800
-                                                    "
-                                                >
-                                                    <span
-                                                        className="
-                                                            mr-2
-                                                            font-semibold
-                                                        "
-                                                    >
-                                                        {
-                                                            comment
-                                                                .userId
-                                                                ?.username
-                                                        }
-                                                    </span>
-
-                                                    {
-                                                        comment.content
-                                                    }
-                                                </p>
-
-                                                {/* DELETE OWN COMMENT */}
-
-                                                {comment
-                                                    .userId
-                                                    ?._id ===
-                                                    user?._id && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            handleDeleteComment(
-                                                                comment._id,
-                                                            )
-                                                        }
-                                                        className="
-                                                            mt-1
-                                                            border-none
-                                                            bg-transparent
-                                                            p-0
-                                                            text-xs
-                                                            text-gray-400
-                                                            hover:text-red-500
-                                                        "
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ),
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* =============================================
-                        COMMENT INPUT
-                    ============================================= */}
-
-                    <form
-                        onSubmit={handleSubmitComment}
-                        className="
-                            flex
-                            shrink-0
-                            items-center
-                            gap-2
-                            border-t
-                            border-gray-200
-                            px-4
-                            py-3
-                        "
-                    >
-                        <input
-                            data-comment-input
-                            type="text"
-                            value={commentText}
-                            onChange={(event) =>
-                                setCommentText(
-                                    event.target.value,
-                                )
-                            }
-                            placeholder="Add a comment..."
-                            className="
-                                min-w-0
-                                flex-1
-                                rounded-full
-                                border
-                                border-gray-300
-                                px-4
-                                py-2
-                                text-sm
-                                outline-none
-                                focus:border-green-500
-                            "
-                        />
+                        {/* MOBILE COMMENTS COLLAPSE */}
 
                         <button
-                            type="submit"
-                            disabled={
-                                commentSubmitting ||
-                                !commentText.trim()
+                            type="button"
+                            onClick={
+                                handleCommentsCollapse
+                            }
+                            aria-label={
+                                commentsCollapsed
+                                    ? "Show comments"
+                                    : "Collapse comments"
                             }
                             className="
+                                ml-auto
                                 flex
-                                h-9
-                                w-9
-                                shrink-0
                                 items-center
                                 justify-center
                                 rounded-full
                                 border-none
-                                bg-green-600
-                                text-white
-                                disabled:cursor-not-allowed
-                                disabled:opacity-40
+                                bg-gray-100
+                                p-1
+                                text-gray-700
+                                md:hidden
                             "
                         >
-                            <Send size={16} />
+                            {commentsCollapsed ? (
+                                <ChevronUp size={18} />
+                            ) : (
+                                <ChevronDown size={18} />
+                            )}
                         </button>
-                    </form>
+                    </div>
+
+                    {/* =================================================
+                        COMMENT CONTENT
+                    ================================================= */}
+
+                    {!commentsCollapsed && (
+                        <>
+                            {/* =============================================
+                                CAPTION + COMMENTS
+                            ============================================= */}
+
+                            <div
+                                className="
+                                    min-h-0
+                                    flex-1
+                                    overflow-y-auto
+                                    overscroll-contain
+                                    px-4
+                                    py-4
+                                "
+                            >
+                                {/* CAPTION */}
+
+                                {post.caption && (
+                                    <div
+                                        className="
+                                            mb-5
+                                            flex
+                                            gap-3
+                                        "
+                                    >
+                                        <img
+                                            src={
+                                                post
+                                                    .postedBy
+                                                    ?.profilePicture
+                                            }
+                                            alt=""
+                                            className="
+                                                h-8
+                                                w-8
+                                                shrink-0
+                                                rounded-full
+                                                object-cover
+                                            "
+                                        />
+
+                                        <p
+                                            className="
+                                                m-0
+                                                text-sm
+                                                leading-6
+                                                text-gray-800
+                                            "
+                                        >
+                                            <span
+                                                className="
+                                                    mr-2
+                                                    font-semibold
+                                                "
+                                            >
+                                                {
+                                                    post
+                                                        .postedBy
+                                                        ?.username
+                                                }
+                                            </span>
+
+                                            {
+                                                post.caption
+                                            }
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* COMMENTS */}
+
+                                {commentsLoading ? (
+                                    <p
+                                        className="
+                                            py-8
+                                            text-center
+                                            text-sm
+                                            text-gray-500
+                                        "
+                                    >
+                                        Loading comments...
+                                    </p>
+                                ) : comments.length ===
+                                  0 ? (
+                                    <p
+                                        className="
+                                            py-8
+                                            text-center
+                                            text-sm
+                                            text-gray-500
+                                        "
+                                    >
+                                        No comments yet.
+                                    </p>
+                                ) : (
+                                    <div className="space-y-5">
+                                        {comments.map(
+                                            (comment) => (
+                                                <div
+                                                    key={
+                                                        comment._id
+                                                    }
+                                                    className="
+                                                        flex
+                                                        gap-3
+                                                    "
+                                                >
+                                                    <img
+                                                        src={
+                                                            comment
+                                                                .userId
+                                                                ?.profilePicture
+                                                        }
+                                                        alt=""
+                                                        className="
+                                                            h-8
+                                                            w-8
+                                                            shrink-0
+                                                            rounded-full
+                                                            object-cover
+                                                        "
+                                                    />
+
+                                                    <div
+                                                        className="
+                                                            min-w-0
+                                                            flex-1
+                                                        "
+                                                    >
+                                                        <p
+                                                            className="
+                                                                m-0
+                                                                text-sm
+                                                                text-gray-800
+                                                            "
+                                                        >
+                                                            <span
+                                                                className="
+                                                                    mr-2
+                                                                    font-semibold
+                                                                "
+                                                            >
+                                                                {
+                                                                    comment
+                                                                        .userId
+                                                                        ?.username
+                                                                }
+                                                            </span>
+
+                                                            {
+                                                                comment.content
+                                                            }
+                                                        </p>
+
+                                                        {/* DELETE OWN COMMENT */}
+
+                                                        {comment
+                                                            .userId
+                                                            ?._id ===
+                                                            user?._id && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    handleDeleteComment(
+                                                                        comment._id
+                                                                    )
+                                                                }
+                                                                className="
+                                                                    mt-1
+                                                                    border-none
+                                                                    bg-transparent
+                                                                    p-0
+                                                                    text-xs
+                                                                    text-gray-400
+                                                                    hover:text-red-500
+                                                                "
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* =============================================
+                                COMMENT INPUT
+                            ============================================= */}
+
+                            <form
+                                onSubmit={
+                                    handleSubmitComment
+                                }
+                                className="
+                                    flex
+                                    shrink-0
+                                    items-center
+                                    gap-2
+                                    border-t
+                                    border-gray-200
+                                    px-4
+                                    py-3
+                                "
+                            >
+                                <input
+                                    data-comment-input
+                                    type="text"
+                                    value={commentText}
+                                    onChange={(
+                                        event
+                                    ) =>
+                                        setCommentText(
+                                            event.target
+                                                .value
+                                        )
+                                    }
+                                    placeholder="Add a comment..."
+                                    className="
+                                        min-w-0
+                                        flex-1
+                                        rounded-full
+                                        border
+                                        border-gray-300
+                                        px-4
+                                        py-2
+                                        text-sm
+                                        outline-none
+                                        focus:border-green-500
+                                    "
+                                />
+
+                                <button
+                                    type="submit"
+                                    disabled={
+                                        commentSubmitting ||
+                                        !commentText.trim()
+                                    }
+                                    className="
+                                        flex
+                                        h-9
+                                        w-9
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-full
+                                        border-none
+                                        bg-green-600
+                                        text-white
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-40
+                                    "
+                                >
+                                    <Send size={16} />
+                                </button>
+                            </form>
+                        </>
+                    )}
                 </div>
 
                 {/* =================================================
@@ -835,23 +996,23 @@ function PostWindow({
                         border-t
                         border-gray-200
                         bg-white
-                        px-5
+                        px-4
                         py-3
+                        sm:px-5
                         md:col-span-2
                         md:row-start-2
                     "
                 >
-
                     {/* LEFT ACTIONS */}
 
                     <div
                         className="
                             flex
                             items-center
-                            gap-2
+                            gap-1
+                            sm:gap-2
                         "
                     >
-
                         {/* LIKE */}
 
                         <button
@@ -896,11 +1057,21 @@ function PostWindow({
                         <button
                             type="button"
                             onClick={() => {
-                                document
-                                    .querySelector(
-                                        "[data-comment-input]",
-                                    )
-                                    ?.focus();
+                                if (
+                                    commentsCollapsed
+                                ) {
+                                    setCommentsCollapsed(
+                                        false
+                                    );
+                                }
+
+                                setTimeout(() => {
+                                    document
+                                        .querySelector(
+                                            "[data-comment-input]"
+                                        )
+                                        ?.focus();
+                                }, 50);
                             }}
                             aria-label="Comment"
                             className="

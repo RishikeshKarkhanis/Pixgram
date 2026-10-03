@@ -9,6 +9,9 @@ const {
     loginUser,
     logoutUser,
 } = require("../controllers/user.controller.js");
+
+const restrictAccess = require("../middlewares/auth.middleware.js");
+
 const router = express.Router();
 
 // Get all users
@@ -27,31 +30,8 @@ router.delete("/delete/:id", deleteUser);
 router.put("/update/:id", updateUser);
 
 // Current logged-in user
-router.get("/currentUser", async (req, res) => {
-    const token = req.cookies.uid;
-
-    const { getUser } = require("../utils/auth.js");
-    const User = require("../models/user.model.js");
-
-    const user = getUser(token);
-
-    if (!user) {
-        return res.status(401).send({
-            error: "Unauthorized",
-        });
-    }
-
-    const data = await User.findById(user._doc._id);
-
-    if (!data) {
-        res.clearCookie("uid");
-
-        return res.status(401).json({
-            message: "User not found!, please login again",
-        });
-    }
-
-    res.json(data);
+router.get("/currentUser", restrictAccess, async (req, res) => {
+    return res.status(200).json(req.user);
 });
 
 // Search users by username

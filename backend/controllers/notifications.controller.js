@@ -5,7 +5,7 @@ const asyncHandler = require("../utils/asyncHandler.js");
 
 // Get all notifications
 const getNotifications = asyncHandler(async (req, res) => {
-    const userId = req.user._doc._id;
+    const userId = req.user._id;
 
     const notifications =
         await notificationService.getNotifications(userId);
