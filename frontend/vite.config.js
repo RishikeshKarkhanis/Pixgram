@@ -9,13 +9,32 @@ export default defineConfig({
     ],
 
     server: {
+        host: "0.0.0.0",
+
         proxy: {
-            "/users": "http://localhost:3000",
-            "/posts": "http://localhost:3000",
-            "/likes": "http://localhost:3000",
-            "/comments": "http://localhost:3000",
-            "/follows": "http://localhost:3000",
-            "/notifications": "http://localhost:3000",
+            "/users": {
+                target: "http://localhost:3000",
+            },
+
+            "/posts": {
+                target: "http://localhost:3000",
+            },
+
+            "/likes": {
+                target: "http://localhost:3000",
+            },
+
+            "/comments": {
+                target: "http://localhost:3000",
+            },
+
+            "/follows": {
+                target: "http://localhost:3000",
+            },
+
+            "/notifications": {
+                target: "http://localhost:3000",
+            },
         },
     },
 });

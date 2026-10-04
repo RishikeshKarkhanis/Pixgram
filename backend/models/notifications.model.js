@@ -1,40 +1,56 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const notificationSchema = new mongoose.Schema({
-    recipient: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-        index: true
-    },
-    
-    sender: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
+const notificationSchema = new mongoose.Schema(
+    {
+        recipient: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+            index: true,
+        },
 
-    type: {
-        type: String,
-        enum: ['follow', 'like', 'comment'],
-        required: true
-    },
+        sender: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
 
-    post: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
-    },
+        type: {
+            type: String,
+            enum: ["follow", "like", "comment"],
+            required: true,
+        },
 
-    comment: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comment'
-    },
+        post: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post",
+        },
 
-    read: {
-        type: Boolean,
-        default: false
+        comment: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Comment",
+        },
+
+        read: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    {
+        timestamps: true,
     }
+);
 
-}, { timestamps: true });
+// Automatically delete notifications
+// 7 days after they are created.
+notificationSchema.index(
+    { createdAt: 1 },
+    {
+        expireAfterSeconds: 60 * 60 * 24 * 7,
+    }
+);
 
-module.exports = mongoose.model('Notification', notificationSchema);
+module.exports = mongoose.model(
+    "Notification",
+    notificationSchema
+);

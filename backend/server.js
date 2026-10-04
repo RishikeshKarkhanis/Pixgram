@@ -24,8 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Configuring CORS to allow requests from the frontend application
-app.use(
-  cors({
+app.use( cors({
     origin: "http://localhost:5173", // Frontend URL
     credentials: true, // Allow cookies to be sent with requests
   }),
@@ -37,12 +36,7 @@ app.use("/posts", restrictAccess, postRoutes);
 app.use("/likes", restrictAccess, likeRoutes);
 app.use("/comments", restrictAccess, commentRoutes);
 app.use("/follows", restrictAccess, followRoutes);
-app.use(
-  "/notifications",
-  restrictAccess,
-  require("./routes/notifications.routes.js"),
-);
-
+app.use("/notifications", restrictAccess, require("./routes/notifications.routes.js"),);
 
 // Error handling middleware to catch and respond to errors
 app.use(errorHandler);

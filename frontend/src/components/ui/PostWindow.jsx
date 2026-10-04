@@ -80,6 +80,40 @@ function PostWindow({
         useState(false);
 
     // =====================================================
+    // RESET MOBILE STATE ON DESKTOP
+    // =====================================================
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia(
+            "(min-width: 768px)"
+        );
+
+        const handleResize = (event) => {
+            if (event.matches) {
+                setCommentsCollapsed(false);
+                setImageCollapsed(false);
+            }
+        };
+
+        if (mediaQuery.matches) {
+            setCommentsCollapsed(false);
+            setImageCollapsed(false);
+        }
+
+        mediaQuery.addEventListener(
+            "change",
+            handleResize
+        );
+
+        return () => {
+            mediaQuery.removeEventListener(
+                "change",
+                handleResize
+            );
+        };
+    }, []);
+
+    // =====================================================
     // LOAD COMMENTS
     // =====================================================
 
@@ -306,7 +340,7 @@ function PostWindow({
     };
 
     // =====================================================
-    // MOBILE COLLAPSE
+    // MOBILE IMAGE COLLAPSE
     // =====================================================
 
     const handleImageCollapse = () => {
@@ -316,6 +350,10 @@ function PostWindow({
             setCommentsCollapsed(false);
         }
     };
+
+    // =====================================================
+    // MOBILE COMMENTS COLLAPSE
+    // =====================================================
 
     const handleCommentsCollapse = () => {
         setCommentsCollapsed((current) => !current);
@@ -351,7 +389,7 @@ function PostWindow({
             "
         >
             {/* =================================================
-                WINDOW
+                POST WINDOW
             ================================================= */}
 
             <article
@@ -380,35 +418,7 @@ function PostWindow({
                 `}
             >
                 {/* =================================================
-                    CLOSE
-                ================================================= */}
-
-                <button
-                    type="button"
-                    onClick={onClose}
-                    aria-label="Close post"
-                    className="
-                        absolute
-                        right-3
-                        top-3
-                        z-50
-                        flex
-                        h-9
-                        w-9
-                        items-center
-                        justify-center
-                        rounded-full
-                        border-none
-                        bg-black/50
-                        text-white
-                        hover:bg-black/70
-                    "
-                >
-                    <X size={20} />
-                </button>
-
-                {/* =================================================
-                    POST IMAGE
+                    IMAGE PANEL
                 ================================================= */}
 
                 <div
@@ -421,6 +431,7 @@ function PostWindow({
                         justify-center
                         overflow-hidden
                         bg-black
+
                         md:row-start-1
                         md:col-start-1
                         md:h-full
@@ -435,7 +446,42 @@ function PostWindow({
                     `}
                     onDoubleClick={handleDoubleClick}
                 >
-                    {/* IMAGE */}
+                    {/* =================================================
+                        MOBILE CLOSE BUTTON
+                        Hidden on desktop
+                    ================================================= */}
+
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        aria-label="Close post"
+                        className="
+                            absolute
+                            right-3
+                            top-3
+                            z-30
+                            flex
+                            h-9
+                            w-9
+                            items-center
+                            justify-center
+                            rounded-full
+                            border-none
+                            bg-black/60
+                            text-white
+                            shadow-md
+                            backdrop-blur-sm
+                            transition
+                            hover:bg-black/80
+                            md:hidden
+                        "
+                    >
+                        <X size={20} />
+                    </button>
+
+                    {/* =================================================
+                        IMAGE
+                    ================================================= */}
 
                     {!imageCollapsed && (
                         <img
@@ -460,6 +506,7 @@ function PostWindow({
                         type="button"
                         onClick={(event) => {
                             event.stopPropagation();
+
                             handleImageCollapse();
                         }}
                         aria-label={
@@ -531,15 +578,17 @@ function PostWindow({
                 </div>
 
                 {/* =================================================
-                    COMMENTS / DETAILS
+                    COMMENTS / DETAILS PANEL
                 ================================================= */}
 
                 <div
                     className={`
+                        relative
                         flex
                         min-h-0
                         flex-col
                         bg-white
+
                         md:flex-1
                         md:overflow-hidden
                         md:border-l
@@ -554,9 +603,40 @@ function PostWindow({
                         }
                     `}
                 >
-                    {/* =============================================
+                    {/* =================================================
+                        DESKTOP CLOSE BUTTON
+                        Hidden on mobile
+                    ================================================= */}
+
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        aria-label="Close post"
+                        className="
+                            absolute
+                            right-3
+                            top-3
+                            z-30
+                            hidden
+                            h-9
+                            w-9
+                            items-center
+                            justify-center
+                            rounded-full
+                            border-none
+                            bg-gray-100
+                            text-gray-700
+                            transition
+                            hover:bg-gray-200
+                            md:flex
+                        "
+                    >
+                        <X size={20} />
+                    </button>
+
+                    {/* =================================================
                         POST HEADER
-                    ============================================= */}
+                    ================================================= */}
 
                     <div
                         className="
@@ -568,6 +648,7 @@ function PostWindow({
                             border-gray-200
                             px-4
                             py-3
+                            pr-14
                         "
                     >
                         <button
@@ -611,7 +692,9 @@ function PostWindow({
                             </span>
                         </button>
 
-                        {/* POST MENU */}
+                        {/* =================================================
+                            DELETE MENU
+                        ================================================= */}
 
                         {canDelete && (
                             <div className="relative">
@@ -683,7 +766,9 @@ function PostWindow({
                             </div>
                         )}
 
-                        {/* MOBILE COMMENTS COLLAPSE */}
+                        {/* =================================================
+                            MOBILE COMMENTS COLLAPSE
+                        ================================================= */}
 
                         <button
                             type="button"
@@ -717,14 +802,14 @@ function PostWindow({
                     </div>
 
                     {/* =================================================
-                        COMMENT CONTENT
+                        COMMENTS CONTENT
                     ================================================= */}
 
                     {!commentsCollapsed && (
                         <>
-                            {/* =============================================
+                            {/* =================================================
                                 CAPTION + COMMENTS
-                            ============================================= */}
+                            ================================================= */}
 
                             <div
                                 className="
@@ -909,9 +994,9 @@ function PostWindow({
                                 )}
                             </div>
 
-                            {/* =============================================
+                            {/* =================================================
                                 COMMENT INPUT
-                            ============================================= */}
+                            ================================================= */}
 
                             <form
                                 onSubmit={
@@ -984,7 +1069,7 @@ function PostWindow({
                 </div>
 
                 {/* =================================================
-                    BOTTOM ACTION PANEL
+                    BOTTOM ACTION BAR
                 ================================================= */}
 
                 <div
@@ -1003,7 +1088,9 @@ function PostWindow({
                         md:row-start-2
                     "
                 >
-                    {/* LEFT ACTIONS */}
+                    {/* =================================================
+                        ACTIONS
+                    ================================================= */}
 
                     <div
                         className="
@@ -1103,7 +1190,9 @@ function PostWindow({
                         </button>
                     </div>
 
-                    {/* LIKE COUNT */}
+                    {/* =================================================
+                        LIKE COUNT
+                    ================================================= */}
 
                     <div
                         className="
