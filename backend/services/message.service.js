@@ -1,56 +1,18 @@
 const Message = require("../models/message.model.js");
-const Follow = require("../models/follow.model.js");
-
-const canMessage = async (userId, otherUserId) => {
-    const follow = await Follow.findOne({
-        $or: [
-            {
-                follower: userId,
-                following: otherUserId,
-            },
-            {
-                follower: otherUserId,
-                following: userId,
-            },
-        ],
-    });
-
-    return !!follow;
-};
 
 const sendMessage = async (senderId, recipientId, content) => {
-    const allowed = await canMessage(senderId, recipientId);
-
-    if (!allowed) {
-        const error = new Error(
-            "You can only message users you follow or users who follow you"
-        );
-
-        error.statusCode = 403;
-        throw error;
-    }
-
     const message = await Message.create({
         sender: senderId,
         recipient: recipientId,
         message: content,
     });
 
-    return message;
+    return await Message.findById(message._id)
+        .populate("sender", "username profilePicture")
+        .populate("recipient", "username profilePicture");
 };
 
 const getMessages = async (userId, otherUserId) => {
-    const allowed = await canMessage(userId, otherUserId);
-
-    if (!allowed) {
-        const error = new Error(
-            "You are not allowed to access this conversation"
-        );
-
-        error.statusCode = 403;
-        throw error;
-    }
-
     const messages = await Message.find({
         $or: [
             {
@@ -71,17 +33,6 @@ const getMessages = async (userId, otherUserId) => {
 };
 
 const markMessagesAsRead = async (userId, otherUserId) => {
-    const allowed = await canMessage(userId, otherUserId);
-
-    if (!allowed) {
-        const error = new Error(
-            "You are not allowed to access this conversation"
-        );
-
-        error.statusCode = 403;
-        throw error;
-    }
-
     const result = await Message.updateMany(
         {
             sender: otherUserId,
@@ -159,7 +110,6 @@ const getChatList = async (userId) => {
             },
         },
 
-        // Get the other user's details
         {
             $lookup: {
                 from: "users",
@@ -205,5 +155,5 @@ module.exports = {
     sendMessage,
     getMessages,
     markMessagesAsRead,
-    getChatList
+    getChatList,
 };

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase.js";
 
+import { useNavigate } from "react-router-dom";
+
 import { getCurrentUser } from "../api/auth.api.js";
 import {
     getFeed,
@@ -53,6 +55,8 @@ function Home() {
     const [newPostCaption, setNewPostCaption] = useState("");
 
     const fileInputRef = useRef(null);
+
+    const navigate = useNavigate();
 
     // =====================================================
     // FETCH CURRENT USER
@@ -397,6 +401,7 @@ function Home() {
                         onProfile={goToProfile}
                         onExplore={openSearch}
                         onCreatePost={openAddPost}
+                        onMessages={() => navigate("/chats")}
                         onEdit={goToEdit}
                         onLogout={logout}
                     />
