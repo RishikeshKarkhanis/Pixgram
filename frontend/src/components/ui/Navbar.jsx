@@ -10,13 +10,13 @@ import {
 import {
     Search,
     Bell,
+    MessageCircle,
     House,
     User,
     Pencil,
     CirclePlus,
     LogOut,
 } from "lucide-react";
-
 
 function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
     const navigate = useNavigate();
@@ -25,9 +25,9 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
     const [notificationOpen, setNotificationOpen] = useState(false);
 
     const [notifications, setNotifications] = useState([]);
-    const [notificationsLoading, setNotificationsLoading] = useState(false);
+    const [notificationsLoading, setNotificationsLoading] =
+        useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
-
 
     // =====================================================
     // LOAD UNREAD COUNT
@@ -50,7 +50,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
         loadUnreadCount();
     }, []);
 
-
     // =====================================================
     // HOME
     // =====================================================
@@ -61,7 +60,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
 
         navigate("/");
     };
-
 
     // =====================================================
     // PROFILE
@@ -78,6 +76,16 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
         navigate(`/${user.username}`);
     };
 
+    // =====================================================
+    // MESSAGES
+    // =====================================================
+
+    const goToMessages = () => {
+        setProfileOpen(false);
+        setNotificationOpen(false);
+
+        navigate("/chats");
+    };
 
     // =====================================================
     // EDIT
@@ -90,7 +98,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
         navigate("/edit");
     };
 
-
     // =====================================================
     // SEARCH
     // =====================================================
@@ -101,7 +108,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
 
         onSearch?.();
     };
-
 
     // =====================================================
     // NOTIFICATIONS
@@ -134,7 +140,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
             ).length;
 
             setUnreadCount(unread);
-
         } catch (error) {
             console.error(
                 "Failed to fetch notifications:",
@@ -142,14 +147,12 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
             );
 
             setNotifications([]);
-
         } finally {
             setNotificationsLoading(false);
         }
 
         onNotifications?.();
     };
-
 
     // =====================================================
     // MARK NOTIFICATION AS READ
@@ -165,9 +168,9 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                     previous.map((item) =>
                         item._id === notification._id
                             ? {
-                                ...item,
-                                read: true,
-                            }
+                                  ...item,
+                                  read: true,
+                              }
                             : item
                     )
                 );
@@ -195,7 +198,9 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                     notification.type === "comment") &&
                 notification.post?._id
             ) {
-                navigate(`/singlepost/${notification.post._id}`);
+                navigate(
+                    `/singlepost/${notification.post._id}`
+                );
                 return;
             }
         } catch (error) {
@@ -206,7 +211,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
         }
     };
 
-
     // =====================================================
     // PROFILE DROPDOWN
     // =====================================================
@@ -216,7 +220,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
 
         setProfileOpen((previous) => !previous);
     };
-
 
     // =====================================================
     // ADD POST
@@ -229,7 +232,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
         onCreatePost?.();
     };
 
-
     // =====================================================
     // LOGOUT
     // =====================================================
@@ -241,7 +243,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
         navigate("/logout");
     };
 
-
     return (
         <nav
             className="
@@ -249,22 +250,17 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                 left-0
                 top-0
                 z-40
-
                 flex
                 w-full
                 items-center
                 justify-between
-
                 bg-white
-
                 px-[5px]
                 pt-[2px]
                 pb-[6px]
-
                 shadow-[0_4px_8px_0_rgba(0,0,0,0.2)]
             "
         >
-
             {/* =================================================
                 LOGO
             ================================================= */}
@@ -302,7 +298,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                 </button>
             </div>
 
-
             {/* =================================================
                 RIGHT SIDE
             ================================================= */}
@@ -315,7 +310,6 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                     gap-[5px]
                 "
             >
-
                 {/* =================================================
                     SEARCH
                 ================================================= */}
@@ -328,25 +322,18 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                         flex
                         h-[50px]
                         w-[50px]
-
                         cursor-pointer
-
                         items-center
                         justify-center
-
                         rounded-full
-
                         border-none
                         bg-transparent
-
                         text-black
-
                         hover:text-[#28a745]
                     "
                 >
                     <Search size={21} />
                 </button>
-
 
                 {/* =================================================
                     NOTIFICATIONS
@@ -367,25 +354,17 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                             flex
                             h-[50px]
                             w-[50px]
-
                             cursor-pointer
-
                             items-center
                             justify-center
-
                             rounded-full
-
                             border-none
                             bg-transparent
-
                             text-black
-
                             hover:text-[#28a745]
                         "
                     >
-
                         <div className="relative">
-
                             <Bell size={21} />
 
                             {/* UNREAD BADGE */}
@@ -396,21 +375,14 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                         absolute
                                         -right-[7px]
                                         -top-[7px]
-
                                         flex
-
                                         h-[18px]
                                         min-w-[18px]
-
                                         items-center
                                         justify-center
-
                                         rounded-full
-
                                         bg-green-600
-
                                         px-[4px]
-
                                         text-[10px]
                                         font-bold
                                         leading-none
@@ -422,12 +394,9 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                         : unreadCount}
                                 </span>
                             )}
-
                         </div>
-
                     </button>
                 </div>
-
 
                 {/* =================================================
                     PROFILE
@@ -441,27 +410,20 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                         pb-[3px]
                     "
                 >
-
                     <img
                         src={user?.profilePicture}
                         alt="Profile"
                         onClick={handleProfile}
                         className="
                             ml-[10px]
-
                             h-[50px]
                             w-[50px]
-
                             cursor-pointer
-
                             rounded-full
-
                             bg-white
-
                             object-cover
                         "
                     />
-
 
                     {/* =================================================
                         PROFILE DROPDOWN
@@ -472,25 +434,17 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                         <div
                             className="
                                 absolute
-
                                 right-[2px]
                                 top-[58px]
-
                                 hidden
-
                                 w-[170px]
-
                                 rounded-[5px]
-
                                 bg-white
-
                                 shadow-[0_4px_8px_0_rgba(0,0,0,0.2)]
-
                                 min-[0px]:block
                                 min-[600px]:hidden
                             "
                         >
-
                             <ul
                                 className="
                                     my-[5px]
@@ -498,33 +452,25 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                     p-0
                                 "
                             >
-
                                 {/* HOME */}
 
                                 <li className="my-[3px]">
-
                                     <button
                                         type="button"
                                         onClick={goHome}
                                         className="
                                             flex
                                             w-full
-
                                             cursor-pointer
-
                                             items-center
                                             gap-2
-
                                             border-none
                                             bg-transparent
-
                                             px-4
                                             py-2
-
                                             text-left
                                             text-[18px]
                                             text-black
-
                                             hover:bg-gray-100
                                             hover:text-[#28a745]
                                         "
@@ -535,36 +481,27 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                             Home
                                         </span>
                                     </button>
-
                                 </li>
-
 
                                 {/* PROFILE */}
 
                                 <li className="my-[3px]">
-
                                     <button
                                         type="button"
                                         onClick={goToProfile}
                                         className="
                                             flex
                                             w-full
-
                                             cursor-pointer
-
                                             items-center
                                             gap-2
-
                                             border-none
                                             bg-transparent
-
                                             px-4
                                             py-2
-
                                             text-left
                                             text-[18px]
                                             text-black
-
                                             hover:bg-gray-100
                                             hover:text-[#28a745]
                                         "
@@ -575,36 +512,60 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                             Profile
                                         </span>
                                     </button>
-
                                 </li>
 
+                                {/* MESSAGES */}
+
+                                <li className="my-[3px]">
+                                    <button
+                                        type="button"
+                                        onClick={goToMessages}
+                                        className="
+                                            flex
+                                            w-full
+                                            cursor-pointer
+                                            items-center
+                                            gap-2
+                                            border-none
+                                            bg-transparent
+                                            px-4
+                                            py-2
+                                            text-left
+                                            text-[18px]
+                                            text-black
+                                            hover:bg-gray-100
+                                            hover:text-[#28a745]
+                                        "
+                                    >
+                                        <MessageCircle
+                                            size={19}
+                                        />
+
+                                        <span>
+                                            Messages
+                                        </span>
+                                    </button>
+                                </li>
 
                                 {/* EDIT */}
 
                                 <li className="my-[3px]">
-
                                     <button
                                         type="button"
                                         onClick={goToEdit}
                                         className="
                                             flex
                                             w-full
-
                                             cursor-pointer
-
                                             items-center
                                             gap-2
-
                                             border-none
                                             bg-transparent
-
                                             px-4
                                             py-2
-
                                             text-left
                                             text-[18px]
                                             text-black
-
                                             hover:bg-gray-100
                                             hover:text-[#28a745]
                                         "
@@ -615,36 +576,27 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                             Edit
                                         </span>
                                     </button>
-
                                 </li>
-
 
                                 {/* ADD POST */}
 
                                 <li className="my-[3px]">
-
                                     <button
                                         type="button"
                                         onClick={handleCreatePost}
                                         className="
                                             flex
                                             w-full
-
                                             cursor-pointer
-
                                             items-center
                                             gap-2
-
                                             border-none
                                             bg-transparent
-
                                             px-4
                                             py-2
-
                                             text-left
                                             text-[18px]
                                             text-black
-
                                             hover:bg-gray-100
                                             hover:text-[#28a745]
                                         "
@@ -655,36 +607,27 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                             Add Post
                                         </span>
                                     </button>
-
                                 </li>
-
 
                                 {/* LOGOUT */}
 
                                 <li className="my-[3px]">
-
                                     <button
                                         type="button"
                                         onClick={handleLogout}
                                         className="
                                             flex
                                             w-full
-
                                             cursor-pointer
-
                                             items-center
                                             gap-2
-
                                             border-none
                                             bg-transparent
-
                                             px-4
                                             py-2
-
                                             text-left
                                             text-[18px]
                                             text-red-600
-
                                             hover:bg-red-50
                                         "
                                     >
@@ -694,18 +637,12 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                             Logout
                                         </span>
                                     </button>
-
                                 </li>
-
                             </ul>
-
                         </div>
                     )}
-
                 </div>
-
             </div>
-
 
             {/* =================================================
                 NOTIFICATION DROPDOWN
@@ -715,25 +652,17 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                 <div
                     className="
                         fixed
-
                         right-[5px]
                         top-[62px]
-
                         flex
-
                         w-[300px]
                         max-w-[calc(100vw-10px)]
-
                         justify-center
-
                         rounded-[5px]
-
                         bg-white
-
                         shadow-[0_4px_8px_0_rgba(0,0,0,0.2)]
                     "
                 >
-
                     <ul
                         className="
                             max-h-[420px]
@@ -741,16 +670,13 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                             overflow-y-auto
                         "
                     >
-
                         {/* LOADING */}
 
                         {notificationsLoading ? (
-
                             <li
                                 className="
                                     px-4
                                     py-6
-
                                     text-center
                                     text-sm
                                     text-gray-500
@@ -758,16 +684,13 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                             >
                                 Loading...
                             </li>
-
                         ) : notifications.length === 0 ? (
-
                             /* EMPTY */
 
                             <li
                                 className="
                                     px-4
                                     py-6
-
                                     text-center
                                     text-sm
                                     text-gray-500
@@ -775,90 +698,78 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                             >
                                 No notifications yet.
                             </li>
-
                         ) : (
-
                             /* NOTIFICATIONS */
 
-                            notifications.map((notification) => (
-
-                                <li
-                                    key={notification._id}
-
-                                    onClick={() =>
-                                        handleNotificationClick(
-                                            notification
-                                        )
-                                    }
-
-                                    className={`
-                                        flex
-                                        cursor-pointer
-                                        gap-3
-
-                                        border-b
-                                        border-gray-100
-
-                                        px-4
-                                        py-3
-
-                                        hover:bg-gray-50
-
-                                        ${!notification.read
-                                            ? "bg-green-50"
-                                            : "bg-white"
-                                        }
-                                    `}
-                                >
-
-                                    {/* POST IMAGE */}
-
-                                    {notification.post?.imageUrl && (
-                                        <img
-                                            src={
+                            notifications.map(
+                                (notification) => (
+                                    <li
+                                        key={notification._id}
+                                        onClick={() =>
+                                            handleNotificationClick(
                                                 notification
-                                                    .post
-                                                    .imageUrl
+                                            )
+                                        }
+                                        className={`
+                                            flex
+                                            cursor-pointer
+                                            gap-3
+                                            border-b
+                                            border-gray-100
+                                            px-4
+                                            py-3
+                                            hover:bg-gray-50
+
+                                            ${
+                                                !notification.read
+                                                    ? "bg-green-50"
+                                                    : "bg-white"
                                             }
-                                            alt="Post"
-
-                                            className="
-                                                h-11
-                                                w-11
-                                                shrink-0
-
-                                                rounded-lg
-
-                                                object-cover
-                                            "
-                                        />
-                                    )}
-
-
-                                    {/* NOTIFICATION CONTENT */}
-
-                                    <div
-                                        className="
-                                            min-w-0
-                                            flex-1
-                                        "
+                                        `}
                                     >
+                                        {/* POST IMAGE */}
 
-                                        {/* FOLLOW */}
+                                        {notification.post
+                                            ?.imageUrl && (
+                                            <img
+                                                src={
+                                                    notification
+                                                        .post
+                                                        .imageUrl
+                                                }
+                                                alt="Post"
+                                                className="
+                                                    h-11
+                                                    w-11
+                                                    shrink-0
+                                                    rounded-lg
+                                                    object-cover
+                                                "
+                                            />
+                                        )}
 
-                                        {notification.type ===
-                                            "follow" && (
+                                        {/* NOTIFICATION CONTENT */}
 
+                                        <div
+                                            className="
+                                                min-w-0
+                                                flex-1
+                                            "
+                                        >
+                                            {/* FOLLOW */}
+
+                                            {notification.type ===
+                                                "follow" && (
                                                 <p
                                                     className="
-                                                    text-sm
-                                                    text-gray-800
-                                                "
+                                                        text-sm
+                                                        text-gray-800
+                                                    "
                                                 >
                                                     <span
                                                         className="
-                                                        font-semibold
-                                                    "
+                                                            font-semibold
+                                                        "
                                                     >
                                                         {
                                                             notification
@@ -869,25 +780,22 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                                     started following
                                                     you.
                                                 </p>
-
                                             )}
 
+                                            {/* LIKE */}
 
-                                        {/* LIKE */}
-
-                                        {notification.type ===
-                                            "like" && (
-
+                                            {notification.type ===
+                                                "like" && (
                                                 <p
                                                     className="
-                                                    text-sm
-                                                    text-gray-800
-                                                "
+                                                        text-sm
+                                                        text-gray-800
+                                                    "
                                                 >
                                                     <span
                                                         className="
-                                                        font-semibold
-                                                    "
+                                                            font-semibold
+                                                        "
                                                     >
                                                         {
                                                             notification
@@ -897,27 +805,23 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                                     </span>{" "}
                                                     liked your post.
                                                 </p>
-
                                             )}
 
+                                            {/* COMMENT */}
 
-                                        {/* COMMENT */}
-
-                                        {notification.type ===
-                                            "comment" && (
-
+                                            {notification.type ===
+                                                "comment" && (
                                                 <>
-
                                                     <p
                                                         className="
-                                                        text-sm
-                                                        text-gray-800
-                                                    "
+                                                            text-sm
+                                                            text-gray-800
+                                                        "
                                                     >
                                                         <span
                                                             className="
-                                                            font-semibold
-                                                        "
+                                                                font-semibold
+                                                            "
                                                         >
                                                             {
                                                                 notification
@@ -925,65 +829,54 @@ function Navbar({ user, onSearch, onNotifications, onCreatePost }) {
                                                                     ?.username
                                                             }
                                                         </span>{" "}
-                                                        commented on your
-                                                        post.
+                                                        commented on
+                                                        your post.
                                                     </p>
 
-
-                                                    {notification.comment
+                                                    {notification
+                                                        .comment
                                                         ?.content && (
-
-                                                            <p
-                                                                className="
-                                                            mt-1
-                                                            truncate
-                                                            text-sm
-                                                            text-gray-500
-                                                        "
-                                                            >
-                                                                "
-                                                                {
-                                                                    notification
-                                                                        .comment
-                                                                        .content
-                                                                }
-                                                                "
-                                                            </p>
-
-                                                        )}
-
+                                                        <p
+                                                            className="
+                                                                mt-1
+                                                                truncate
+                                                                text-sm
+                                                                text-gray-500
+                                                            "
+                                                        >
+                                                            "
+                                                            {
+                                                                notification
+                                                                    .comment
+                                                                    .content
+                                                            }
+                                                            "
+                                                        </p>
+                                                    )}
                                                 </>
-
                                             )}
 
+                                            {/* TIME */}
 
-                                        {/* TIME */}
-
-                                        <p
-                                            className="
-                                                mt-1
-                                                text-xs
-                                                text-gray-400
-                                            "
-                                        >
-                                            {new Date(
-                                                notification.createdAt
-                                            ).toLocaleString()}
-                                        </p>
-
-                                    </div>
-
-                                </li>
-
-                            ))
-
+                                            <p
+                                                className="
+                                                    mt-1
+                                                    text-xs
+                                                    text-gray-400
+                                                "
+                                            >
+                                                {new Date(
+                                                    notification.createdAt
+                                                ).toLocaleString()}
+                                            </p>
+                                        </div>
+                                    </li>
+                                )
+                            )
                         )}
-
                     </ul>
-
                 </div>
             )}
-
         </nav>
     );
 }
