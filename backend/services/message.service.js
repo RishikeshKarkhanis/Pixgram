@@ -136,21 +136,58 @@ const getChatList = async (userId) => {
         {
             $group: {
                 _id: "$otherUser",
+
                 lastMessage: {
                     $first: "$message",
                 },
+
                 lastMessageAt: {
                     $first: "$createdAt",
                 },
+
                 lastMessageSender: {
                     $first: "$sender",
                 },
+
                 lastMessageRecipient: {
                     $first: "$recipient",
                 },
+
                 lastMessageRead: {
                     $first: "$read",
                 },
+            },
+        },
+
+        // Get the other user's details
+        {
+            $lookup: {
+                from: "users",
+                localField: "_id",
+                foreignField: "_id",
+                as: "user",
+            },
+        },
+
+        {
+            $unwind: "$user",
+        },
+
+        {
+            $project: {
+                _id: 0,
+
+                user: {
+                    _id: "$user._id",
+                    username: "$user.username",
+                    profilePicture: "$user.profilePicture",
+                },
+
+                lastMessage: 1,
+                lastMessageAt: 1,
+                lastMessageSender: 1,
+                lastMessageRecipient: 1,
+                lastMessageRead: 1,
             },
         },
 

@@ -7,6 +7,8 @@ import Edit from "./pages/Edit.jsx";
 import DeleteUser from "./pages/DeleteUser.jsx";
 import Profile from "./pages/Profile.jsx";
 import Posts from "./pages/Posts.jsx";
+import Chats from "./pages/Chats";
+import ChatWindow from "./pages/ChatWindow";
 
 function App() {
     return (
@@ -22,7 +24,12 @@ function App() {
 
             <Route path="/:username" element={<Profile />} />
 
+            <Route path="/chats" element={<Chats />}>
+                <Route path=":conversationId" element={<ChatWindow />} />
+            </Route>
+
             <Route path="*" element={<h1>404 Not Found</h1>} />
+
         </Routes>
     );
 }

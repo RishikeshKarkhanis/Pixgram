@@ -35,6 +35,10 @@ export default defineConfig({
             "/notifications": {
                 target: "http://localhost:3000",
             },
+
+            "/messages": {
+                target: "http://localhost:3000",
+            },
         },
     },
 });
