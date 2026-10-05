@@ -4,6 +4,8 @@ const Like = require("../models/like.model.js");
 const Post = require("../models/post.model.js");
 const Follow = require("../models/follow.model.js");
 
+const messageService = require("./message.service.js");
+
 const { setUser } = require("../utils/auth.js");
 
 const getUsers = async () => {
@@ -121,16 +123,17 @@ const deleteUser = async (userId) => {
     });
 
     for (const like of userLikes) {
-        await Post.findByIdAndUpdate(like.postId, { $inc: { likes: -1 } });
+        await Post.findByIdAndUpdate(like.postId, {
+            $inc: { likes: -1 },
+        });
     }
 
     /*
      * --------------------------------------------------
-     * Decrease user's post count from their profile
+     * Delete posts
      * --------------------------------------------------
      */
 
-    // Delete posts
     await Post.deleteMany({
         postedBy: userId,
     });
@@ -152,6 +155,14 @@ const deleteUser = async (userId) => {
     await Follow.deleteMany({
         $or: [{ follower: userId }, { following: userId }],
     });
+
+    /*
+     * --------------------------------------------------
+     * Delete user's messages / chats
+     * --------------------------------------------------
+     */
+
+    await messageService.deleteMessagesForUser(userId);
 
     /*
      * --------------------------------------------------

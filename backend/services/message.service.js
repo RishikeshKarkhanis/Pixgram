@@ -151,9 +151,25 @@ const getChatList = async (userId) => {
     return chats;
 };
 
+// =====================================================
+// DELETE ALL MESSAGES INVOLVING A USER
+// =====================================================
+
+const deleteMessagesForUser = async (userId) => {
+    const result = await Message.deleteMany({
+        $or: [
+            { sender: userId },
+            { recipient: userId },
+        ],
+    });
+
+    return result;
+};
+
 module.exports = {
     sendMessage,
     getMessages,
     markMessagesAsRead,
     getChatList,
+    deleteMessagesForUser,
 };
