@@ -8,6 +8,7 @@ const postRoutes = require("./routes/post.routes.js");
 const likeRoutes = require("./routes/like.routes.js");
 const commentRoutes = require("./routes/comments.routes.js");
 const followRoutes = require("./routes/follow.routes.js");
+const messageRoutes = require("./routes/message.routes.js");
 
 // Importing database connection and authentication middleware
 const connectDatabase = require("./utils/databaseConnection.js");
@@ -37,6 +38,7 @@ app.use("/likes", restrictAccess, likeRoutes);
 app.use("/comments", restrictAccess, commentRoutes);
 app.use("/follows", restrictAccess, followRoutes);
 app.use("/notifications", restrictAccess, require("./routes/notifications.routes.js"),);
+app.use("/messages", restrictAccess, messageRoutes);
 
 // Error handling middleware to catch and respond to errors
 app.use(errorHandler);
