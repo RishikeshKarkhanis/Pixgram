@@ -50,7 +50,9 @@ function AuthCard() {
             });
 
             navigate("/");
-        } catch (err) {
+        }
+
+        catch (err) {
             console.error(err);
             setError(
                 err.message === "Invalid credentials"
@@ -94,7 +96,9 @@ function AuthCard() {
             const url = await getDownloadURL(storageRef);
 
             setProfilePicture(url);
-        } catch (err) {
+        }
+
+        catch (err) {
             console.error(err);
             setError("Failed to upload profile picture.");
         } finally {
@@ -122,7 +126,9 @@ function AuthCard() {
             setLoginPassword("");
             setIsLogin(true);
             setError("");
-        } catch (err) {
+        }
+
+        catch (err) {
             console.error(err);
             setError("User Already Exists!");
         } finally {
@@ -148,27 +154,19 @@ function AuthCard() {
                 <div className="flex justify-center mb-5">
                     <div className="flex w-full max-w-sm border border-gray-300 rounded-lg overflow-hidden">
 
-                        <button
-                            type="button"
-                            onClick={() => switchMode(true)}
-                            className={`flex-1 py-2.5 font-medium transition-colors ${
+                        <button type="button" onClick={() => switchMode(true)} className={`flex-1 py-2.5 font-medium transition-colors ${
                                 isLogin
                                     ? "bg-green-600 text-white"
                                     : "bg-white text-gray-600 hover:bg-gray-50"
-                            }`}
-                        >
+                            }`}>
                             Login
                         </button>
 
-                        <button
-                            type="button"
-                            onClick={() => switchMode(false)}
-                            className={`flex-1 py-2.5 font-medium transition-colors ${
+                        <button type="button" onClick={() => switchMode(false)} className={`flex-1 py-2.5 font-medium transition-colors ${
                                 !isLogin
                                     ? "bg-green-600 text-white"
                                     : "bg-white text-gray-600 hover:bg-gray-50"
-                            }`}
-                        >
+                            }`}>
                             Register
                         </button>
 
@@ -177,49 +175,25 @@ function AuthCard() {
 
                 {/* Error */}
                 {error && (
-                    <div
-                        role="alert"
-                        className="w-full mb-4 px-3 py-2 text-center text-sm text-red-600 bg-red-50 border border-red-200 rounded-md"
-                    >
+                    <div role="alert" className="w-full mb-4 px-3 py-2 text-center text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
                         {error}
                     </div>
                 )}
 
                 {/* LOGIN */}
                 {isLogin ? (
-                    <form
-                        onSubmit={handleLogin}
-                        className="flex flex-col items-center gap-3"
-                    >
+                    <form onSubmit={handleLogin} className="flex flex-col items-center gap-3">
                         <h2 className="text-2xl font-bold text-black mb-1">
                             Login
                         </h2>
 
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={loginEmail}
-                            onChange={(e) => setLoginEmail(e.target.value)}
-                            required
-                            className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
-                        />
+                        <input type="email" placeholder="Email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" />
 
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={loginPassword}
-                            onChange={(e) =>
+                        <input type="password" placeholder="Password" value={loginPassword} onChange={(e) =>
                                 setLoginPassword(e.target.value)
-                            }
-                            required
-                            className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
-                        />
+                            } required className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" />
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-2.5 bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:opacity-60 text-white rounded-md transition-colors cursor-pointer"
-                        >
+                        <button type="submit" disabled={loading} className="w-full py-2.5 bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:opacity-60 text-white rounded-md transition-colors cursor-pointer">
                             {loading ? "Logging in..." : "Login"}
                         </button>
                     </form>
@@ -227,26 +201,17 @@ function AuthCard() {
 
                     /* REGISTER */
 
-                    <form
-                        onSubmit={handleRegister}
-                        className="flex flex-col items-center gap-3"
-                    >
+                    <form onSubmit={handleRegister} className="flex flex-col items-center gap-3">
                         <h2 className="text-2xl font-bold text-black mb-1">
                             Register
                         </h2>
 
                         {/* Profile Picture */}
-                        <button
-                            type="button"
-                            onClick={handleImageUpload}
-                            disabled={loading}
-                            className="relative h-20 w-20 rounded-full overflow-hidden border border-gray-200 shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
-                            style={{
+                        <button type="button" onClick={handleImageUpload} disabled={loading} className="relative h-20 w-20 rounded-full overflow-hidden border border-gray-200 shadow-sm cursor-pointer hover:opacity-90 transition-opacity" style={{
                                 backgroundImage: `url(${profilePicture})`,
                                 backgroundSize: "cover",
                                 backgroundPosition: "center",
-                            }}
-                        >
+                            }}>
                             {loading && (
                                 <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-xs font-medium">
                                     Uploading...
@@ -254,50 +219,19 @@ function AuthCard() {
                             )}
                         </button>
 
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="hidden"
-                        />
+                        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                            className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
-                        />
+                        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" />
 
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={registerEmail}
-                            onChange={(e) =>
+                        <input type="email" placeholder="Email" value={registerEmail} onChange={(e) =>
                                 setRegisterEmail(e.target.value)
-                            }
-                            required
-                            className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
-                        />
+                            } required className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" />
 
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={registerPassword}
-                            onChange={(e) =>
+                        <input type="password" placeholder="Password" value={registerPassword} onChange={(e) =>
                                 setRegisterPassword(e.target.value)
-                            }
-                            required
-                            className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600"
-                        />
+                            } required className="w-full px-3 py-2.5 text-center border border-gray-300 rounded-md outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" />
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-2.5 bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:opacity-60 text-white rounded-md transition-colors cursor-pointer"
-                        >
+                        <button type="submit" disabled={loading} className="w-full py-2.5 bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:opacity-60 text-white rounded-md transition-colors cursor-pointer">
                             {loading ? "Registering..." : "Register"}
                         </button>
                     </form>
@@ -311,11 +245,7 @@ function AuthCard() {
                                 New To PixGram? :
                             </p>
 
-                            <button
-                                type="button"
-                                onClick={() => switchMode(false)}
-                                className="text-green-600 hover:text-green-700 cursor-pointer"
-                            >
+                            <button type="button" onClick={() => switchMode(false)} className="text-green-600 hover:text-green-700 cursor-pointer">
                                 Register
                             </button>
                         </>
@@ -325,11 +255,7 @@ function AuthCard() {
                                 Already Have An Account? :
                             </p>
 
-                            <button
-                                type="button"
-                                onClick={() => switchMode(true)}
-                                className="text-green-600 hover:text-green-700 cursor-pointer"
-                            >
+                            <button type="button" onClick={() => switchMode(true)} className="text-green-600 hover:text-green-700 cursor-pointer">
                                 Login
                             </button>
                         </>

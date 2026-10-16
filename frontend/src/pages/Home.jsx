@@ -49,7 +49,9 @@ function Home() {
 
         setUser(currentUser);
         setProfilePicture(currentUser.profilePicture);
-      } catch (error) {
+      }
+
+      catch (error) {
         console.error("Error fetching current user:", error);
 
         window.location.href = "/auth";
@@ -69,7 +71,9 @@ function Home() {
       try {
         const data = await getFeed(user._id);
         setPosts(Array.isArray(data) ? data : []);
-      } catch (error) {
+      }
+
+      catch (error) {
         console.error("Error fetching feed:", error);
       }
     };
@@ -139,7 +143,9 @@ function Home() {
       setNewPostCaption("");
 
       setShowAddPost(true);
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error creating post:", error);
     }
   };
@@ -151,7 +157,9 @@ function Home() {
     if (newPostId) {
       try {
         await deletePost(newPostId);
-      } catch (error) {
+      }
+
+      catch (error) {
         console.error("Error deleting cancelled post:", error);
       }
     }
@@ -182,7 +190,9 @@ function Home() {
       const url = await getDownloadURL(storageRef);
 
       setNewPostImage(url);
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error uploading image:", error);
     }
   };
@@ -210,7 +220,9 @@ function Home() {
       setNewPostImage(DEFAULT_POST_IMAGE);
 
       setNewPostCaption("");
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error submitting post:", error);
     }
   };
@@ -220,7 +232,7 @@ function Home() {
   }
 
   return (
-    <div className=" min-h-screen w-full bg-[rgb(244,242,238)]">
+    <div className="min-h-screen w-full bg-[rgb(244,242,238)]">
       {/* Navbar */}
       <Navbar user={user} profilePicture={profilePicture} onHome={goToHome} onProfile={goToProfile} onEdit={goToEdit} onCreatePost={openAddPost} onLogout={logout} onSearch={openSearch} />
 
@@ -229,16 +241,11 @@ function Home() {
       {showAddPost && <AddPostModal newPostImage={newPostImage} newPostCaption={newPostCaption} setNewPostCaption={setNewPostCaption} fileInputRef={fileInputRef} onImageUpload={handleImageUpload} onFileChange={handleFileChange} onSubmit={submitPost} onCancel={closeAddPost} />}
 
       <div className="min-h-screenw-full">
-        <aside
-          className="fixed left-0 top-[60px] z-20 hidden h-[calc(100vh-60px)] w-[150px] 
-                border-r border-gray-200 bg-white min-[600px]:block min-[820px]:w-[175px] 
-                min-[1000px]:w-[225px] min-[1200px]:w-[225px]">
+        <aside className="fixed left-0 top-[60px] z-20 hidden h-[calc(100vh-60px)] w-[150px] border-r border-gray-200 bg-white min-[600px]:block min-[820px]:w-[175px] min-[1000px]:w-[225px] min-[1200px]:w-[225px]">
           <Sidebar onHome={goToHome} onProfile={goToProfile} onExplore={openSearch} onCreatePost={openAddPost} onMessages={() => navigate("/chats")} onLogout={logout} />
         </aside>
 
-        <main
-          className="min-h-screen bg-[rgb(244,242,238)] px-2 pt-[80px] pb-8 
-                min-[600px]:ml-[150px] min-[820px]:ml-[175px] min-[1000px]:ml-[225px] min-[1200px]:ml-[225px]">
+        <main className="min-h-screen bg-[rgb(244,242,238)] px-2 pt-[80px] pb-8 min-[600px]:ml-[150px] min-[820px]:ml-[175px] min-[1000px]:ml-[225px] min-[1200px]:ml-[225px]">
           <div className="mx-auto flex w-full flex-col items-center gap-5">
             {posts.length > 0 ? (
               posts.map((post) => (

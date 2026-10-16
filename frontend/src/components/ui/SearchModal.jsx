@@ -42,7 +42,9 @@ function SearchModal({ onClose }) {
                         : []
                 );
 
-            } catch (error) {
+            }
+
+            catch (error) {
 
                 console.error(
                     "Search failed:",
@@ -83,72 +85,22 @@ function SearchModal({ onClose }) {
 
 
     return (
-        <div
-            className="
-                fixed
-                inset-0
-                z-50
-                flex
-                items-center
-                justify-center
-                bg-black/50
-                px-4
-            "
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
 
-            <div
-                className="
-                    flex
-                    w-full
-                    max-w-lg
-                    flex-col
-                    overflow-hidden
-                    rounded-[5px]
-                    bg-white
-                    shadow-[0_4px_8px_0_rgba(0,0,0,0.2)]
-                "
-            >
+            <div className="flex w-full max-w-lg flex-col overflow-hidden rounded-[5px] bg-white shadow-[0_4px_8px_0_rgba(0,0,0,0.2)]">
 
                 {/* =================================================
                     HEADER
                 ================================================= */}
 
-                <div
-                    className="
-                        flex
-                        shrink-0
-                        items-center
-                        justify-between
-                        border-b
-                        border-gray-200
-                        px-4
-                        py-3
-                    "
-                >
+                <div className="flex shrink-0 items-center justify-between border-b border-gray-200 px-4 py-3">
 
                     <h3 className="m-0 text-lg font-semibold">
                         Search
                     </h3>
 
 
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        aria-label="Close search"
-                        className="
-                            flex
-                            cursor-pointer
-                            items-center
-                            justify-center
-                            rounded-full
-                            border-none
-                            bg-transparent
-                            p-1
-                            text-gray-600
-                            hover:bg-gray-100
-                            hover:text-red-500
-                        "
-                    >
+                    <button type="button" onClick={onClose} aria-label="Close search" className="flex cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-1 text-gray-600 hover:bg-gray-100 hover:text-red-500">
                         <X size={24} />
                     </button>
 
@@ -165,38 +117,11 @@ function SearchModal({ onClose }) {
 
                     <div className="relative">
 
-                        <Search
-                            size={19}
-                            className="
-                                absolute
-                                left-3
-                                top-1/2
-                                -translate-y-1/2
-                                text-gray-400
-                            "
-                        />
+                        <Search size={19} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
 
-                        <input
-                            type="text"
-                            value={query}
-                            onChange={(e) =>
+                        <input type="text" value={query} onChange={(e) =>
                                 setQuery(e.target.value)
-                            }
-                            autoFocus
-                            placeholder="Search users..."
-                            className="
-                                w-full
-                                rounded-[5px]
-                                border
-                                border-gray-300
-                                py-2
-                                pl-10
-                                pr-3
-                                text-[16px]
-                                outline-none
-                                focus:border-[#28a745]
-                            "
-                        />
+                            } autoFocus placeholder="Search users..." className="w-full rounded-[5px] border border-gray-300 py-2 pl-10 pr-3 text-[16px] outline-none focus:border-[#28a745]" />
 
                     </div>
 
@@ -205,12 +130,7 @@ function SearchModal({ onClose }) {
                         RESULTS
                     ================================================= */}
 
-                    <div
-                        className="
-                            max-h-[300px]
-                            overflow-y-auto
-                        "
-                    >
+                    <div className="max-h-[300px] overflow-y-auto">
 
                         {loading ? (
 
@@ -228,50 +148,22 @@ function SearchModal({ onClose }) {
 
                             results.map((result) => (
 
-                                <button
-                                    key={result._id}
-                                    type="button"
-                                    onClick={() =>
+                                <button key={result._id} type="button" onClick={() =>
                                         handleUserClick(
                                             result.username
                                         )
-                                    }
-                                    className="
-                                        flex
-                                        w-full
-                                        cursor-pointer
-                                        items-center
-                                        justify-between
-                                        border-none
-                                        border-b
-                                        border-gray-100
-                                        bg-white
-                                        px-2
-                                        py-2
-                                        text-left
-                                        hover:bg-gray-50
-                                    "
-                                >
+                                    } className="flex w-full cursor-pointer items-center justify-between border-none border-b border-gray-100 bg-white px-2 py-2 text-left hover:bg-gray-50">
 
                                     <span className="text-[17px] font-medium">
                                         {result.username}
                                     </span>
 
 
-                                    <img
-                                        src={
+                                    <img src={
                                             result.profilePicture
-                                        }
-                                        alt={
+                                        } alt={
                                             result.username
-                                        }
-                                        className="
-                                            h-11
-                                            w-11
-                                            rounded-full
-                                            object-cover
-                                        "
-                                    />
+                                        } className="h-11 w-11 rounded-full object-cover" />
 
                                 </button>
 

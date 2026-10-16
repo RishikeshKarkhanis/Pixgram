@@ -134,7 +134,9 @@ function PostWindow({
                         ? result
                         : []
                 );
-            } catch (error) {
+            }
+
+            catch (error) {
                 console.error(
                     "Failed to fetch comments:",
                     error
@@ -172,7 +174,9 @@ function PostWindow({
             setLikeCount(newLikeCount);
 
             return result.liked;
-        } catch (error) {
+        }
+
+        catch (error) {
             console.error(
                 "Failed to toggle like:",
                 error
@@ -248,7 +252,9 @@ function PostWindow({
             ]);
 
             setCommentText("");
-        } catch (error) {
+        }
+
+        catch (error) {
             console.error(
                 "Failed to create comment:",
                 error
@@ -272,7 +278,9 @@ function PostWindow({
                         comment._id !== commentId
                 )
             );
-        } catch (error) {
+        }
+
+        catch (error) {
             console.error(
                 "Failed to delete comment:",
                 error
@@ -304,7 +312,9 @@ function PostWindow({
 
                 alert("Post link copied!");
             }
-        } catch (error) {
+        }
+
+        catch (error) {
             if (error?.name !== "AbortError") {
                 console.error(
                     "Failed to share post:",
@@ -376,24 +386,12 @@ function PostWindow({
     // =====================================================
 
     return (
-        <div
-            className="
-                flex
-                min-h-full
-                w-full
-                justify-center
-                px-0
-                pt-8
-                sm:px-4
-                sm:py-8
-            "
-        >
+        <div className="flex min-h-full w-full justify-center px-0 pt-8 sm:px-4 sm:py-8">
             {/* =================================================
                 POST WINDOW
             ================================================= */}
 
-            <article
-                className={`
+            <article className={`
                     relative
                     flex
                     min-h-0
@@ -415,14 +413,12 @@ function PostWindow({
                     md:grid
                     md:grid-cols-[1.1fr_0.9fr]
                     md:grid-rows-[1fr_auto]
-                `}
-            >
+                `}>
                 {/* =================================================
                     IMAGE PANEL
                 ================================================= */}
 
-                <div
-                    className={`
+                <div className={`
                         relative
                         flex
                         w-full
@@ -443,39 +439,13 @@ function PostWindow({
                                 ? "h-10"
                                 : "h-[42dvh]"
                         }
-                    `}
-                    onDoubleClick={handleDoubleClick}
-                >
+                    `} onDoubleClick={handleDoubleClick}>
                     {/* =================================================
                         MOBILE CLOSE BUTTON
                         Hidden on desktop
                     ================================================= */}
 
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        aria-label="Close post"
-                        className="
-                            absolute
-                            right-3
-                            top-3
-                            z-30
-                            flex
-                            h-9
-                            w-9
-                            items-center
-                            justify-center
-                            rounded-full
-                            border-none
-                            bg-black/60
-                            text-white
-                            shadow-md
-                            backdrop-blur-sm
-                            transition
-                            hover:bg-black/80
-                            md:hidden
-                        "
-                    >
+                    <button type="button" onClick={onClose} aria-label="Close post" className="absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full border-none bg-black/60 text-white shadow-md backdrop-blur-sm transition hover:bg-black/80 md:hidden">
                         <X size={20} />
                     </button>
 
@@ -484,54 +454,25 @@ function PostWindow({
                     ================================================= */}
 
                     {!imageCollapsed && (
-                        <img
-                            src={post.imageUrl}
-                            alt={
+                        <img src={post.imageUrl} alt={
                                 post.caption ||
                                 "Post"
-                            }
-                            className="
-                                h-full
-                                w-full
-                                object-contain
-                            "
-                        />
+                            } className="h-full w-full object-contain" />
                     )}
 
                     {/* =================================================
                         MOBILE IMAGE COLLAPSE BUTTON
                     ================================================= */}
 
-                    <button
-                        type="button"
-                        onClick={(event) => {
+                    <button type="button" onClick={(event) => {
                             event.stopPropagation();
 
                             handleImageCollapse();
-                        }}
-                        aria-label={
+                        }} aria-label={
                             imageCollapsed
                                 ? "Show image"
                                 : "Collapse image"
-                        }
-                        className="
-                            absolute
-                            bottom-1
-                            left-1/2
-                            z-20
-                            flex
-                            -translate-x-1/2
-                            items-center
-                            justify-center
-                            rounded-full
-                            border-none
-                            bg-white/20
-                            p-1
-                            text-white
-                            backdrop-blur-sm
-                            md:hidden
-                        "
-                    >
+                        } className="absolute bottom-1 left-1/2 z-20 flex -translate-x-1/2 items-center justify-center rounded-full border-none bg-white/20 p-1 text-white backdrop-blur-sm md:hidden">
                         {imageCollapsed ? (
                             <ChevronDown size={20} />
                         ) : (
@@ -544,18 +485,7 @@ function PostWindow({
                     ================================================= */}
 
                     {showHeart && (
-                        <Heart
-                            size={110}
-                            strokeWidth={0}
-                            fill="white"
-                            className="
-                                pointer-events-none
-                                absolute
-                                z-10
-                                text-white
-                                opacity-90
-                            "
-                        />
+                        <Heart size={110} strokeWidth={0} fill="white" className="pointer-events-none absolute z-10 text-white opacity-90" />
                     )}
 
                     {/* =================================================
@@ -563,17 +493,7 @@ function PostWindow({
                     ================================================= */}
 
                     {showHeartCrack && (
-                        <Heart
-                            size={110}
-                            strokeWidth={3}
-                            className="
-                                pointer-events-none
-                                absolute
-                                z-10
-                                text-white
-                                opacity-90
-                            "
-                        />
+                        <Heart size={110} strokeWidth={3} className="pointer-events-none absolute z-10 text-white opacity-90" />
                     )}
                 </div>
 
@@ -581,8 +501,7 @@ function PostWindow({
                     COMMENTS / DETAILS PANEL
                 ================================================= */}
 
-                <div
-                    className={`
+                <div className={`
                         relative
                         flex
                         min-h-0
@@ -601,36 +520,13 @@ function PostWindow({
                                 ? "flex-none"
                                 : "flex-1"
                         }
-                    `}
-                >
+                    `}>
                     {/* =================================================
                         DESKTOP CLOSE BUTTON
                         Hidden on mobile
                     ================================================= */}
 
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        aria-label="Close post"
-                        className="
-                            absolute
-                            right-3
-                            top-3
-                            z-30
-                            hidden
-                            h-9
-                            w-9
-                            items-center
-                            justify-center
-                            rounded-full
-                            border-none
-                            bg-gray-100
-                            text-gray-700
-                            transition
-                            hover:bg-gray-200
-                            md:flex
-                        "
-                    >
+                    <button type="button" onClick={onClose} aria-label="Close post" className="absolute right-3 top-3 z-30 hidden h-9 w-9 items-center justify-center rounded-full border-none bg-gray-100 text-gray-700 transition hover:bg-gray-200 md:flex">
                         <X size={20} />
                     </button>
 
@@ -638,53 +534,14 @@ function PostWindow({
                         POST HEADER
                     ================================================= */}
 
-                    <div
-                        className="
-                            flex
-                            shrink-0
-                            items-center
-                            justify-between
-                            border-b
-                            border-gray-200
-                            px-4
-                            py-3
-                            pr-14
-                        "
-                    >
-                        <button
-                            type="button"
-                            onClick={handleProfileClick}
-                            className="
-                                flex
-                                items-center
-                                gap-3
-                                border-none
-                                bg-transparent
-                                p-0
-                                text-left
-                            "
-                        >
-                            <img
-                                src={
+                    <div className="flex shrink-0 items-center justify-between border-b border-gray-200 px-4 py-3 pr-14">
+                        <button type="button" onClick={handleProfileClick} className="flex items-center gap-3 border-none bg-transparent p-0 text-left">
+                            <img src={
                                     post.postedBy
                                         ?.profilePicture
-                                }
-                                alt=""
-                                className="
-                                    h-10
-                                    w-10
-                                    rounded-full
-                                    object-cover
-                                "
-                            />
+                                } alt="" className="h-10 w-10 rounded-full object-cover" />
 
-                            <span
-                                className="
-                                    text-sm
-                                    font-semibold
-                                    text-gray-900
-                                "
-                            >
+                            <span className="text-sm font-semibold text-gray-900">
                                 {
                                     post.postedBy
                                         ?.username
@@ -698,66 +555,21 @@ function PostWindow({
 
                         {canDelete && (
                             <div className="relative">
-                                <button
-                                    type="button"
-                                    onClick={() =>
+                                <button type="button" onClick={() =>
                                         setShowMenu(
                                             (current) =>
                                                 !current
                                         )
-                                    }
-                                    className="
-                                        border-none
-                                        bg-transparent
-                                        p-2
-                                        text-gray-700
-                                        hover:text-black
-                                    "
-                                >
-                                    <MoreHorizontal
-                                        size={20}
-                                    />
+                                    } className="border-none bg-transparent p-2 text-gray-700 hover:text-black">
+                                    <MoreHorizontal size={20} />
                                 </button>
 
                                 {showMenu && (
-                                    <div
-                                        className="
-                                            absolute
-                                            right-0
-                                            top-10
-                                            z-20
-                                            w-[150px]
-                                            rounded-md
-                                            bg-white
-                                            py-1
-                                            shadow-lg
-                                            ring-1
-                                            ring-black/5
-                                        "
-                                    >
-                                        <button
-                                            type="button"
-                                            onClick={
+                                    <div className="absolute right-0 top-10 z-20 w-[150px] rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5">
+                                        <button type="button" onClick={
                                                 handleDeletePost
-                                            }
-                                            className="
-                                                flex
-                                                w-full
-                                                items-center
-                                                gap-2
-                                                border-none
-                                                bg-transparent
-                                                px-4
-                                                py-2
-                                                text-left
-                                                text-sm
-                                                text-red-600
-                                                hover:bg-red-50
-                                            "
-                                        >
-                                            <Trash2
-                                                size={16}
-                                            />
+                                            } className="flex w-full items-center gap-2 border-none bg-transparent px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">
+                                            <Trash2 size={16} />
 
                                             Delete post
                                         </button>
@@ -770,29 +582,13 @@ function PostWindow({
                             MOBILE COMMENTS COLLAPSE
                         ================================================= */}
 
-                        <button
-                            type="button"
-                            onClick={
+                        <button type="button" onClick={
                                 handleCommentsCollapse
-                            }
-                            aria-label={
+                            } aria-label={
                                 commentsCollapsed
                                     ? "Show comments"
                                     : "Collapse comments"
-                            }
-                            className="
-                                ml-auto
-                                flex
-                                items-center
-                                justify-center
-                                rounded-full
-                                border-none
-                                bg-gray-100
-                                p-1
-                                text-gray-700
-                                md:hidden
-                            "
-                        >
+                            } className="ml-auto flex items-center justify-center rounded-full border-none bg-gray-100 p-1 text-gray-700 md:hidden">
                             {commentsCollapsed ? (
                                 <ChevronUp size={18} />
                             ) : (
@@ -811,56 +607,19 @@ function PostWindow({
                                 CAPTION + COMMENTS
                             ================================================= */}
 
-                            <div
-                                className="
-                                    min-h-0
-                                    flex-1
-                                    overflow-y-auto
-                                    overscroll-contain
-                                    px-4
-                                    py-4
-                                "
-                            >
+                            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
                                 {/* CAPTION */}
 
                                 {post.caption && (
-                                    <div
-                                        className="
-                                            mb-5
-                                            flex
-                                            gap-3
-                                        "
-                                    >
-                                        <img
-                                            src={
+                                    <div className="mb-5 flex gap-3">
+                                        <img src={
                                                 post
                                                     .postedBy
                                                     ?.profilePicture
-                                            }
-                                            alt=""
-                                            className="
-                                                h-8
-                                                w-8
-                                                shrink-0
-                                                rounded-full
-                                                object-cover
-                                            "
-                                        />
+                                            } alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
 
-                                        <p
-                                            className="
-                                                m-0
-                                                text-sm
-                                                leading-6
-                                                text-gray-800
-                                            "
-                                        >
-                                            <span
-                                                className="
-                                                    mr-2
-                                                    font-semibold
-                                                "
-                                            >
+                                        <p className="m-0 text-sm leading-6 text-gray-800">
+                                            <span className="mr-2 font-semibold">
                                                 {
                                                     post
                                                         .postedBy
@@ -878,76 +637,30 @@ function PostWindow({
                                 {/* COMMENTS */}
 
                                 {commentsLoading ? (
-                                    <p
-                                        className="
-                                            py-8
-                                            text-center
-                                            text-sm
-                                            text-gray-500
-                                        "
-                                    >
+                                    <p className="py-8 text-center text-sm text-gray-500">
                                         Loading comments...
                                     </p>
                                 ) : comments.length ===
                                   0 ? (
-                                    <p
-                                        className="
-                                            py-8
-                                            text-center
-                                            text-sm
-                                            text-gray-500
-                                        "
-                                    >
+                                    <p className="py-8 text-center text-sm text-gray-500">
                                         No comments yet.
                                     </p>
                                 ) : (
                                     <div className="space-y-5">
                                         {comments.map(
                                             (comment) => (
-                                                <div
-                                                    key={
+                                                <div key={
                                                         comment._id
-                                                    }
-                                                    className="
-                                                        flex
-                                                        gap-3
-                                                    "
-                                                >
-                                                    <img
-                                                        src={
+                                                    } className="flex gap-3">
+                                                    <img src={
                                                             comment
                                                                 .userId
                                                                 ?.profilePicture
-                                                        }
-                                                        alt=""
-                                                        className="
-                                                            h-8
-                                                            w-8
-                                                            shrink-0
-                                                            rounded-full
-                                                            object-cover
-                                                        "
-                                                    />
+                                                        } alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
 
-                                                    <div
-                                                        className="
-                                                            min-w-0
-                                                            flex-1
-                                                        "
-                                                    >
-                                                        <p
-                                                            className="
-                                                                m-0
-                                                                text-sm
-                                                                text-gray-800
-                                                            "
-                                                        >
-                                                            <span
-                                                                className="
-                                                                    mr-2
-                                                                    font-semibold
-                                                                "
-                                                            >
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="m-0 text-sm text-gray-800">
+                                                            <span className="mr-2 font-semibold">
                                                                 {
                                                                     comment
                                                                         .userId
@@ -966,23 +679,11 @@ function PostWindow({
                                                             .userId
                                                             ?._id ===
                                                             user?._id && (
-                                                            <button
-                                                                type="button"
-                                                                onClick={() =>
+                                                            <button type="button" onClick={() =>
                                                                     handleDeleteComment(
                                                                         comment._id
                                                                     )
-                                                                }
-                                                                className="
-                                                                    mt-1
-                                                                    border-none
-                                                                    bg-transparent
-                                                                    p-0
-                                                                    text-xs
-                                                                    text-gray-400
-                                                                    hover:text-red-500
-                                                                "
-                                                            >
+                                                                } className="mt-1 border-none bg-transparent p-0 text-xs text-gray-400 hover:text-red-500">
                                                                 Delete
                                                             </button>
                                                         )}
@@ -998,69 +699,22 @@ function PostWindow({
                                 COMMENT INPUT
                             ================================================= */}
 
-                            <form
-                                onSubmit={
+                            <form onSubmit={
                                     handleSubmitComment
-                                }
-                                className="
-                                    flex
-                                    shrink-0
-                                    items-center
-                                    gap-2
-                                    border-t
-                                    border-gray-200
-                                    px-4
-                                    py-3
-                                "
-                            >
-                                <input
-                                    data-comment-input
-                                    type="text"
-                                    value={commentText}
-                                    onChange={(
+                                } className="flex shrink-0 items-center gap-2 border-t border-gray-200 px-4 py-3">
+                                <input data-comment-input type="text" value={commentText} onChange={(
                                         event
                                     ) =>
                                         setCommentText(
                                             event.target
                                                 .value
                                         )
-                                    }
-                                    placeholder="Add a comment..."
-                                    className="
-                                        min-w-0
-                                        flex-1
-                                        rounded-full
-                                        border
-                                        border-gray-300
-                                        px-4
-                                        py-2
-                                        text-sm
-                                        outline-none
-                                        focus:border-green-500
-                                    "
-                                />
+                                    } placeholder="Add a comment..." className="min-w-0 flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-green-500" />
 
-                                <button
-                                    type="submit"
-                                    disabled={
+                                <button type="submit" disabled={
                                         commentSubmitting ||
                                         !commentText.trim()
-                                    }
-                                    className="
-                                        flex
-                                        h-9
-                                        w-9
-                                        shrink-0
-                                        items-center
-                                        justify-center
-                                        rounded-full
-                                        border-none
-                                        bg-green-600
-                                        text-white
-                                        disabled:cursor-not-allowed
-                                        disabled:opacity-40
-                                    "
-                                >
+                                    } className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-none bg-green-600 text-white disabled:cursor-not-allowed disabled:opacity-40">
                                     <Send size={16} />
                                 </button>
                             </form>
@@ -1072,67 +726,28 @@ function PostWindow({
                     BOTTOM ACTION BAR
                 ================================================= */}
 
-                <div
-                    className="
-                        flex
-                        shrink-0
-                        items-center
-                        justify-between
-                        border-t
-                        border-gray-200
-                        bg-white
-                        px-4
-                        py-3
-                        sm:px-5
-                        md:col-span-2
-                        md:row-start-2
-                    "
-                >
+                <div className="flex shrink-0 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-5 md:col-span-2 md:row-start-2">
                     {/* =================================================
                         ACTIONS
                     ================================================= */}
 
-                    <div
-                        className="
-                            flex
-                            items-center
-                            gap-1
-                            sm:gap-2
-                        "
-                    >
+                    <div className="flex items-center gap-1 sm:gap-2">
                         {/* LIKE */}
 
-                        <button
-                            type="button"
-                            onClick={handleLike}
-                            aria-label={
+                        <button type="button" onClick={handleLike} aria-label={
                                 hasLiked
                                     ? "Unlike"
                                     : "Like"
-                            }
-                            className="
-                                flex
-                                items-center
-                                gap-1
-                                border-none
-                                bg-transparent
-                                p-2
-                                text-gray-900
-                            "
-                        >
-                            <Heart
-                                size={24}
-                                fill={
+                            } className="flex items-center gap-1 border-none bg-transparent p-2 text-gray-900">
+                            <Heart size={24} fill={
                                     hasLiked
                                         ? "currentColor"
                                         : "none"
-                                }
-                                className={
+                                } className={
                                     hasLiked
                                         ? "text-red-500"
                                         : "text-gray-900"
-                                }
-                            />
+                                } />
 
                             <span className="text-sm">
                                 {likeCount}
@@ -1141,9 +756,7 @@ function PostWindow({
 
                         {/* COMMENT */}
 
-                        <button
-                            type="button"
-                            onClick={() => {
+                        <button type="button" onClick={() => {
                                 if (
                                     commentsCollapsed
                                 ) {
@@ -1159,33 +772,13 @@ function PostWindow({
                                         )
                                         ?.focus();
                                 }, 50);
-                            }}
-                            aria-label="Comment"
-                            className="
-                                border-none
-                                bg-transparent
-                                p-2
-                                text-gray-900
-                            "
-                        >
-                            <MessageCircle
-                                size={24}
-                            />
+                            }} aria-label="Comment" className="border-none bg-transparent p-2 text-gray-900">
+                            <MessageCircle size={24} />
                         </button>
 
                         {/* SHARE */}
 
-                        <button
-                            type="button"
-                            onClick={handleShare}
-                            aria-label="Share"
-                            className="
-                                border-none
-                                bg-transparent
-                                p-2
-                                text-gray-900
-                            "
-                        >
+                        <button type="button" onClick={handleShare} aria-label="Share" className="border-none bg-transparent p-2 text-gray-900">
                             <Send size={24} />
                         </button>
                     </div>
@@ -1194,13 +787,7 @@ function PostWindow({
                         LIKE COUNT
                     ================================================= */}
 
-                    <div
-                        className="
-                            text-sm
-                            font-semibold
-                            text-gray-800
-                        "
-                    >
+                    <div className="text-sm font-semibold text-gray-800">
                         {likeCount}{" "}
                         {likeCount === 1
                             ? "like"

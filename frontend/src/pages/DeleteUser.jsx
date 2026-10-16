@@ -92,7 +92,9 @@ function DeleteUser() {
                 // Go back to auth page
                 window.location.href = "/auth";
 
-            } catch (error) {
+            }
+
+            catch (error) {
 
                 console.error(
                     "Error deleting account:",

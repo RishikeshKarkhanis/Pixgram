@@ -66,7 +66,9 @@ function Profile() {
 
         setUser(currentUser);
         setProfilePicture(currentUser.profilePicture);
-      } catch (error) {
+      }
+
+      catch (error) {
         console.error("Error fetching current user:", error);
         window.location.href = "/login";
       }
@@ -98,7 +100,9 @@ function Profile() {
         const owner = await getUserById(profileId.uid);
 
         setProfileOwner(owner);
-      } catch (error) {
+      }
+
+      catch (error) {
         console.error("Error fetching profile:", error);
 
         setProfileOwner(null);
@@ -121,7 +125,9 @@ function Profile() {
         const data = await getMyPosts(profileOwner._id);
 
         setPosts(Array.isArray(data) ? data : []);
-      } catch (error) {
+      }
+
+      catch (error) {
         console.error("Error fetching profile posts:", error);
 
         setPosts([]);
@@ -143,7 +149,9 @@ function Profile() {
         const result = await isFollowing(profileOwner._id, user._id);
 
         setFollowing(!!result?.isFollowing);
-      } catch (error) {
+      }
+
+      catch (error) {
         console.error("Error checking follow status:", error);
 
         setFollowing(false);
@@ -213,7 +221,9 @@ function Profile() {
 
         followers: (currentOwner.followers || 0) + 1,
       }));
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error following user:", error);
     }
   };
@@ -232,7 +242,9 @@ function Profile() {
         ...currentOwner,
         followers: Math.max(0, (currentOwner.followers || 0) - 1),
       }));
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error unfollowing user:", error);
     }
   };
@@ -258,7 +270,9 @@ function Profile() {
       setNewPostCaption("");
 
       setShowAddPost(true);
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error creating post:", error);
     }
   };
@@ -273,7 +287,9 @@ function Profile() {
     if (newPostId) {
       try {
         await deletePost(newPostId);
-      } catch (error) {
+      }
+
+      catch (error) {
         console.error("Error deleting cancelled post:", error);
       }
     }
@@ -304,7 +320,9 @@ function Profile() {
       const url = await getDownloadURL(storageRef);
 
       setNewPostImage(url);
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error uploading image:", error);
     }
   };
@@ -338,7 +356,9 @@ function Profile() {
       setNewPostImage(DEFAULT_POST_IMAGE);
 
       setNewPostCaption("");
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error submitting post:", error);
     }
   };
@@ -368,25 +388,22 @@ function Profile() {
           const deletePromises = result.items.map((itemRef) => deleteObject(itemRef));
 
           await Promise.all(deletePromises);
-        } catch (storageError) {
+        }
+
+        catch (storageError) {
           console.error("Error deleting Firebase files:", storageError);
         }
       }
-    } catch (error) {
+    }
+
+    catch (error) {
       console.error("Error deleting post:", error);
     }
   };
 
   if (!user || !profileOwner) {
     return (
-      <div
-        className="
-                    flex
-                    min-h-screen
-                    items-center
-                    justify-center
-                    bg-[rgb(244,242,238)]
-                ">
+      <div className="flex min-h-screen items-center justify-center bg-[rgb(244,242,238)]">
         <p className="text-gray-600">Loading profile...</p>
       </div>
     );
@@ -400,15 +417,12 @@ function Profile() {
 
       {showAddPost && isOwnProfile && <AddPostModal newPostImage={newPostImage} newPostCaption={newPostCaption} setNewPostCaption={setNewPostCaption} fileInputRef={fileInputRef} onImageUpload={handleImageUpload} onFileChange={handleFileChange} onSubmit={submitPost} onCancel={closeAddPost} />}
 
-      <div className=" min-h-screen w-full ">
+      <div className="min-h-screen w-full">
         {/* =============================================
                     SIDEBAR
                 ============================================= */}
 
-        <aside
-          className="fixed left-0 top-[60px] z-20 hidden h-[calc(100vh-60px)] w-[150px]
-                    border-r border-gray-200 bg-white min-[600px]:block min-[820px]:w-[175px] 
-                    min-[1000px]:w-[225px] min-[1200px]:w-[225px]">
+        <aside className="fixed left-0 top-[60px] z-20 hidden h-[calc(100vh-60px)] w-[150px] border-r border-gray-200 bg-white min-[600px]:block min-[820px]:w-[175px] min-[1000px]:w-[225px] min-[1200px]:w-[225px]">
           <Sidebar onHome={goToHome} onProfile={goToProfile} onExplore={openSearch} onCreatePost={openAddPost} onLogout={logout} />
         </aside>
 
@@ -416,18 +430,13 @@ function Profile() {
                     PROFILE CONTENT
                 ============================================= */}
 
-        <main
-          className=" min-h-screen bg-[rgb(244,242,238)] px-2 pt-[80px] pb-10 
-                    min-[600px]:ml-[150px] min-[820px]:ml-[175px] min-[1000px]:ml-[225px] 
-                    min-[1200px]:ml-[225px]">
-          <div className=" mx-auto flex w-full max-w-[700px] flex-col items-center gap-6">
+        <main className="min-h-screen bg-[rgb(244,242,238)] px-2 pt-[80px] pb-10 min-[600px]:ml-[150px] min-[820px]:ml-[175px] min-[1000px]:ml-[225px] min-[1200px]:ml-[225px]">
+          <div className="mx-auto flex w-full max-w-[700px] flex-col items-center gap-6">
             {/* =====================================
                             PROFILE HEADER
                         ===================================== */}
 
-            <section
-              className=" w-full max-w-[500px] rounded-[5px] bg-white 
-                        p-4 shadow-[0_4px_8px_rgba(0,0,0,0.15)]">
+            <section className="w-full max-w-[500px] rounded-[5px] bg-white p-4 shadow-[0_4px_8px_rgba(0,0,0,0.15)]">
               <div className="flex items-center gap-4">
                 {/* PROFILE PICTURE */}
 
@@ -437,54 +446,18 @@ function Profile() {
 
                 {/* ACCOUNT DETAILS */}
 
-                <div
-                  className="
-                                        min-w-0
-                                        flex-1
-                                    ">
+                <div className="min-w-0 flex-1">
                   {/* USERNAME + BUTTON */}
 
-                  <div
-                    className="
-                                            flex
-                                            flex-wrap
-                                            items-center
-                                            gap-3
-                                        ">
-                    <h2
-                      className="
-                                                truncate
-
-                                                text-xl
-                                                font-semibold
-                                            ">
-                      {profileOwner.username}
-                    </h2>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h2 className="truncate text-xl font-semibold">{profileOwner.username}</h2>
 
                     {/* =================================
                                             OWN PROFILE → EDIT
                                         ================================= */}
 
                     {isOwnProfile ? (
-                      <button
-                        type="button"
-                        onClick={goToEdit}
-                        className="
-                                                    rounded-[5px]
-
-                                                    bg-[#28a745]
-
-                                                    px-4
-                                                    py-1
-
-                                                    text-sm
-                                                    font-medium
-                                                    text-white
-
-                                                    transition
-
-                                                    hover:bg-[#218838]
-                                                ">
+                      <button type="button" onClick={goToEdit} className="rounded-[5px] bg-[#28a745] px-4 py-1 text-sm font-medium text-white transition hover:bg-[#218838]">
                         Edit
                       </button>
                     ) : following ? (
@@ -492,25 +465,7 @@ function Profile() {
                                                                       OTHER USER → FOLLOWING
                                                                   =============================== */
 
-                      <button
-                        type="button"
-                        onClick={handleUnfollow}
-                        className="
-                                                    rounded-[5px]
-
-                                                    bg-[#5cb85c]
-
-                                                    px-4
-                                                    py-1
-
-                                                    text-sm
-                                                    font-medium
-                                                    text-white
-
-                                                    transition
-
-                                                    hover:bg-[#4cae4c]
-                                                ">
+                      <button type="button" onClick={handleUnfollow} className="rounded-[5px] bg-[#5cb85c] px-4 py-1 text-sm font-medium text-white transition hover:bg-[#4cae4c]">
                         Following
                       </button>
                     ) : (
@@ -518,25 +473,7 @@ function Profile() {
                                                                       OTHER USER → FOLLOW
                                                                   =============================== */
 
-                      <button
-                        type="button"
-                        onClick={handleFollow}
-                        className="
-                                                    rounded-[5px]
-
-                                                    bg-[#28a745]
-
-                                                    px-4
-                                                    py-1
-
-                                                    text-sm
-                                                    font-medium
-                                                    text-white
-
-                                                    transition
-
-                                                    hover:bg-[#218838]
-                                                ">
+                      <button type="button" onClick={handleFollow} className="rounded-[5px] bg-[#28a745] px-4 py-1 text-sm font-medium text-white transition hover:bg-[#218838]">
                         Follow
                       </button>
                     )}
@@ -544,20 +481,9 @@ function Profile() {
 
                   {/* =====================================
                                         PROFILE STATS
-                                    ===================================== */}
+                      ===================================== */}
 
-                  <div
-                    className="
-                                            mt-3
-
-                                            flex
-                                            flex-wrap
-
-                                            gap-4
-
-                                            text-sm
-                                            text-gray-700
-                                        ">
+                  <div className="mt-3 flex flex-wrap gap-4 text-sm text-gray-700">
                     <span>
                       <strong>{profileOwner.posts ?? 0}</strong> Posts
                     </span>
@@ -575,19 +501,7 @@ function Profile() {
                                         BIO
                                     ===================================== */}
 
-                  {profileOwner.bio && (
-                    <p
-                      className="
-                                                mt-3
-
-                                                text-left
-
-                                                text-sm
-                                                text-gray-700
-                                            ">
-                      {profileOwner.bio}
-                    </p>
-                  )}
+                  {profileOwner.bio && <p className="mt-3 text-left text-sm text-gray-700">{profileOwner.bio}</p>}
                 </div>
               </div>
             </section>
@@ -596,93 +510,24 @@ function Profile() {
                             POSTS
                         ===================================== */}
 
-            <section
-              className="
-                                flex
-                                w-full
-
-                                flex-col
-                                items-center
-
-                                gap-5
-                            ">
+            <section className="flex w-full flex-col items-center gap-5">
               {loading ? (
-                <p
-                  className="
-                                        mt-8
-                                        text-gray-600
-                                    ">
-                  Loading posts...
-                </p>
+                <p className="mt-8 text-gray-600">Loading posts...</p>
               ) : posts.length > 0 ? (
                 posts.map((post) => (
-                  <div
-                    key={post._id}
-                    className="
-                                            w-full
-
-                                            min-[600px]:w-[90%]
-
-                                            min-[1000px]:w-[500px]
-                                        ">
-                    <PostCard
-                      post={post}
-                      user={user}
-                      profilePicture={profilePicture}
-                      /*
-                       * Delete X appears
-                       * ONLY when this is
-                       * the logged user's
-                       * profile.
-                       */
-
-                      canDelete={isOwnProfile}
-                      onDeletePost={handleDeletePost}
-                      onPostUpdate={handlePostUpdate}
-                    />
+                  <div key={post._id} className="w-full min-[600px]:w-[90%] min-[1000px]:w-[500px]">
+                    <PostCard post={post} user={user} profilePicture={profilePicture} canDelete={isOwnProfile} onDeletePost={handleDeletePost} onPostUpdate={handlePostUpdate} />
                   </div>
                 ))
               ) : (
-                <div
-                  className="
-                                        mt-8
-
-                                        flex
-                                        flex-col
-                                        items-center
-
-                                        text-center
-                                    ">
-                  <p
-                    className="
-                                            text-gray-600
-                                        ">
-                    No posts available.
-                  </p>
+                <div className="mt-8 flex flex-col items-center text-center">
+                  <p className="text-gray-600">No posts available.</p>
 
                   {/* Only show Create button
                                         on own profile. */}
 
                   {isOwnProfile && (
-                    <button
-                      type="button"
-                      onClick={openAddPost}
-                      className="
-                                                mt-3
-
-                                                rounded-[5px]
-
-                                                bg-[#28a745]
-
-                                                px-4
-                                                py-2
-
-                                                text-sm
-                                                font-medium
-                                                text-white
-
-                                                hover:bg-[#218838]
-                                            ">
+                    <button type="button" onClick={openAddPost} className="mt-3 rounded-[5px] bg-[#28a745] px-4 py-2 text-sm font-medium text-white hover:bg-[#218838]">
                       Create your first post
                     </button>
                   )}

@@ -6,17 +6,14 @@ function Logout() {
         const handleLogout = async () => {
             try {
                 await logoutUser();
-
                 window.location.href = "/";
-            } catch (error) {
-                console.error("Logout failed:", error);
+            }
 
-                // Even if the backend request fails,
-                // send the user back to the home page.
+            catch (error) {
+                console.error("Logout failed:", error);
                 window.location.href = "/";
             }
         };
-
         handleLogout();
     }, []);
 

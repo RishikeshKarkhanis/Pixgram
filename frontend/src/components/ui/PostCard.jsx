@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Heart, MessageCircle, X } from "lucide-react";
@@ -6,404 +6,206 @@ import { Heart, MessageCircle, X } from "lucide-react";
 import { toggleLike } from "../../api/likes.api.js";
 
 function PostCard({
-    post,
-    user,
-    profilePicture,
+  post,
+  user,
+  profilePicture,
 
-    // true only when viewing your own profile
-    canDelete = false,
+  // true only when viewing your own profile
+  canDelete = false,
 
-    // Parent handles actual post deletion
-    onDeletePost,
+  // Parent handles actual post deletion
+  onDeletePost,
 
-    // Lets parent update its post array
-    onPostUpdate,
+  // Lets parent update its post array
+  onPostUpdate,
 }) {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // =================================================
-    // LIKE
-    // =================================================
+  // =================================================
+  // LIKE
+  // =================================================
 
-    const [hasLiked, setHasLiked] = useState(
-        Boolean(post.hasLiked),
-    );
+  const [hasLiked, setHasLiked] = useState(Boolean(post.hasLiked));
 
-    const [likeCount, setLikeCount] = useState(
-        post.likes || 0,
-    );
+  const [likeCount, setLikeCount] = useState(post.likes || 0);
 
-    // =================================================
-    // DOUBLE TAP HEART
-    // =================================================
+  useEffect(() => {
+    setHasLiked(Boolean(post.hasLiked));
+    setLikeCount(post.likes || 0);
+  }, [post.hasLiked, post.likes]);
 
-    const [showHeart, setShowHeart] = useState(false);
+  // =================================================
+  // DOUBLE TAP HEART
+  // =================================================
 
-    const [showHeartCrack, setShowHeartCrack] = useState(false);
+  const [showHeart, setShowHeart] = useState(false);
 
-    // =================================================
-    // LIKE
-    // =================================================
+  const [showHeartCrack, setShowHeartCrack] = useState(false);
 
-    const handleLike = async () => {
-        if (!user?._id || !post?._id) {
-            return false;
-        }
+  // =================================================
+  // LIKE
+  // =================================================
 
-        try {
-            const result = await toggleLike(
-                user._id,
-                post._id,
-            );
+  const handleLike = async () => {
+    if (!user?._id || !post?._id) {
+      return false;
+    }
 
-            const newLikeCount = result.liked
-                ? likeCount + 1
-                : Math.max(0, likeCount - 1);
+    try {
+      const result = await toggleLike(user._id, post._id);
 
-            setHasLiked(result.liked);
-            setLikeCount(newLikeCount);
+      const newLikeCount = result.liked ? likeCount + 1 : Math.max(0, likeCount - 1);
 
-            // Keep parent state in sync
-            onPostUpdate?.(post._id, {
-                hasLiked: result.liked,
-                likes: newLikeCount,
-            });
+      setHasLiked(result.liked);
+      setLikeCount(newLikeCount);
 
-            return result.liked;
-        } catch (error) {
-            console.error("Failed to toggle like:", error);
+      // Keep parent state in sync
+      onPostUpdate?.(post._id, {
+        hasLiked: result.liked,
+        likes: newLikeCount,
+      });
 
-            return false;
-        }
-    };
+      return result.liked;
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
 
-    // =================================================
-    // DOUBLE CLICK
-    // =================================================
+      return false;
+    }
+  };
 
-    const handleDoubleClick = async () => {
-        const liked = await handleLike();
+  // =================================================
+  // DOUBLE CLICK
+  // =================================================
 
-        if (liked) {
-            setShowHeart(true);
+  const handleDoubleClick = async () => {
+    const liked = await handleLike();
 
-            setTimeout(() => {
-                setShowHeart(false);
-            }, 800);
-        } else {
-            setShowHeartCrack(true);
+    if (liked) {
+      setShowHeart(true);
 
-            setTimeout(() => {
-                setShowHeartCrack(false);
-            }, 800);
-        }
-    };
+      setTimeout(() => {
+        setShowHeart(false);
+      }, 800);
+    } else {
+      setShowHeartCrack(true);
 
-    // =================================================
-    // OPEN SINGLE POST
-    // =================================================
+      setTimeout(() => {
+        setShowHeartCrack(false);
+      }, 800);
+    }
+  };
 
-    const handleOpenPost = () => {
-        if (!post?._id) {
-            return;
-        }
+  // =================================================
+  // OPEN SINGLE POST
+  // =================================================
 
-        navigate(`/singlepost/${post._id}`);
-    };
+  const handleOpenPost = () => {
+    if (!post?._id) {
+      return;
+    }
 
-    // =================================================
-    // RENDER
-    // =================================================
+    navigate(`/singlepost/${post._id}`);
+  };
 
-    return (
-        <article
-            className="
-                w-full
-                overflow-hidden
-                rounded-[5px]
-                bg-white
-                shadow-[0_4px_8px_0_rgba(0,0,0,0.2)]
-            "
-        >
-            {/* =================================================
+  // =================================================
+  // RENDER
+  // =================================================
+
+  return (
+    <article className="w-full overflow-hidden rounded-[5px] bg-white shadow-[0_4px_8px_0_rgba(0,0,0,0.2)]">
+      {/* =================================================
                 HEADER
             ================================================= */}
 
-            <div
-                className="
-                    flex
-                    items-center
-                    justify-between
-                    bg-white
-                    px-[10px]
-                    py-[10px]
-                "
-            >
-                <div
-                    className="
-                        flex
-                        items-center
-                        gap-[10px]
-                    "
-                >
-                    <img
-                        src={post.postedBy?.profilePicture}
-                        alt=""
-                        className="
-                            h-10
-                            w-10
-                            rounded-full
-                            object-cover
-                        "
-                    />
+      <div className="flex items-center justify-between bg-white px-[10px] py-[10px]">
+        <div className="flex items-center gap-[10px]">
+          <img src={post.postedBy?.profilePicture} alt="" className="h-10 w-10 rounded-full object-cover" />
 
-                    <h6
-                        className="
-                            m-0
-                            text-[18px]
-                            font-bold
-                        "
-                    >
-                        <a
-                            href={`/${post.postedBy?.username}`}
-                            className="
-                                text-black
-                                no-underline
-                            "
-                        >
-                            {post.postedBy?.username}
-                        </a>
-                    </h6>
-                </div>
+          <h6 className="m-0 text-[18px] font-bold">
+            <a href={`/${post.postedBy?.username}`} className="text-black no-underline">
+              {post.postedBy?.username}
+            </a>
+          </h6>
+        </div>
 
-                {/* =================================================
+        {/* =================================================
                     DELETE POST
                 ================================================= */}
 
-                {canDelete && (
-                    <button
-                        type="button"
-                        onClick={() =>
-                            onDeletePost?.(
-                                post._id,
-                                post.postedBy?._id,
-                            )
-                        }
-                        className="
-                            cursor-pointer
-                            rounded-full
-                            border-none
-                            bg-transparent
-                            p-1
-                            text-black
-                            transition
-                            hover:bg-gray-100
-                            hover:text-red-500
-                        "
-                        aria-label="Delete post"
-                    >
-                        <X size={22} />
-                    </button>
-                )}
-            </div>
+        {canDelete && (
+          <button type="button" onClick={() => onDeletePost?.(post._id, post.postedBy?._id)} className="cursor-pointer rounded-full border-none bg-transparent p-1 text-black transition hover:bg-gray-100 hover:text-red-500" aria-label="Delete post">
+            <X size={22} />
+          </button>
+        )}
+      </div>
 
-            {/* =================================================
+      {/* =================================================
                 IMAGE
             ================================================= */}
 
-            <div className="aspect-square w-full">
-                <div
-                    className="
-                        relative
-                        flex
-                        h-full
-                        w-full
-                        cursor-pointer
-                        items-center
-                        justify-center
-                        bg-cover
-                        bg-center
-                        bg-no-repeat
-                    "
-                    style={{
-                        backgroundImage: `url(${post.imageUrl})`,
-                    }}
-                    onDoubleClick={handleDoubleClick}
-                >
-                    {/* =================================================
+      <div className="aspect-square w-full">
+        <div
+          className="relative flex h-full w-full cursor-pointer items-center justify-center bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${post.imageUrl})`,
+          }}
+          onDoubleClick={handleDoubleClick}>
+          {/* =================================================
                         DOUBLE CLICK HEART
                     ================================================= */}
 
-                    {showHeart && (
-                        <Heart
-                            size={110}
-                            strokeWidth={0}
-                            fill="white"
-                            className="
-                                pointer-events-none
-                                absolute
-                                z-10
-                                opacity-90
-                            "
-                        />
-                    )}
+          {showHeart && <Heart size={110} strokeWidth={0} fill="white" className="pointer-events-none absolute z-10 opacity-90" />}
 
-                    {/* =================================================
+          {/* =================================================
                         DOUBLE CLICK HEART CRACK
                     ================================================= */}
 
-                    {showHeartCrack && (
-                        <Heart
-                            size={110}
-                            strokeWidth={3}
-                            className="
-                                pointer-events-none
-                                absolute
-                                z-10
-                                text-white
-                                opacity-90
-                            "
-                        />
-                    )}
-                </div>
-            </div>
+          {showHeartCrack && <Heart size={110} strokeWidth={3} className="pointer-events-none absolute z-10 text-white opacity-90" />}
+        </div>
+      </div>
 
-            {/* =================================================
+      {/* =================================================
                 CAPTION
             ================================================= */}
 
-            <div
-                className="
-                    bg-white
-                    px-[10px]
-                    py-[5px]
-                    text-left
-                    text-base
-                "
-            >
-                <p className="m-0">
-                    {post.caption}
-                </p>
-            </div>
+      <div className="bg-white px-[10px] py-[5px] text-left text-base">
+        <p className="m-0">{post.caption}</p>
+      </div>
 
-            {/* =================================================
+      {/* =================================================
                 OPTIONS
             ================================================= */}
-
-            <div
-                className="
-                    flex
-                    items-center
-                    justify-start
-                    gap-1
-                    rounded-b-[5px]
-                    bg-white
-                    p-[10px]
-                "
-            >
-                {/* =================================================
+      <div className="flex items-center justify-start gap-1 rounded-b-[5px] bg-white p-[10px]">
+        {/* =================================================
                     LIKE
                 ================================================= */}
 
-                <div
-                    className="
-                        flex
-                        items-center
-                        justify-center
-                        gap-[2.5px]
-                        bg-white
-                        p-[5px]
-                    "
-                >
-                    <button
-                        type="button"
-                        onClick={handleLike}
-                        className="
-                            flex
-                            cursor-pointer
-                            items-center
-                            justify-center
-                            rounded-full
-                            border-none
-                            bg-transparent
-                            p-1
-                            transition
-                            hover:bg-gray-100
-                        "
-                        aria-label={
-                            hasLiked ? "Unlike" : "Like"
-                        }
-                    >
-                        <Heart
-                            size={21}
-                            strokeWidth={2}
-                            fill={
-                                hasLiked
-                                    ? "crimson"
-                                    : "none"
-                            }
-                            className={
-                                hasLiked
-                                    ? "text-red-600"
-                                    : "text-black"
-                            }
-                        />
-                    </button>
+        <div className="flex items-center justify-center gap-[2.5px] bg-white p-[5px]">
+          <button type="button" onClick={handleLike} className="flex cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-1 transition hover:bg-gray-100" aria-label={hasLiked ? "Unlike" : "Like"}>
+            <Heart size={21} strokeWidth={2} fill={hasLiked ? "crimson" : "none"} className={hasLiked ? "text-red-600" : "text-black"} />
+          </button>
 
-                    <div className="px-1">
-                        <p className="m-0">
-                            {likeCount}
-                        </p>
-                    </div>
-                </div>
+          <div className="px-1">
+            <p className="m-0">{likeCount}</p>
+          </div>
+        </div>
 
-                {/* =================================================
+        {/* =================================================
                     COMMENTS
                 ================================================= */}
 
-                <div
-                    className="
-                        flex
-                        items-center
-                        justify-center
-                        gap-[2.5px]
-                        bg-white
-                        p-[5px]
-                    "
-                >
-                    <button
-                        type="button"
-                        onClick={handleOpenPost}
-                        className="
-                            flex
-                            cursor-pointer
-                            items-center
-                            justify-center
-                            rounded-full
-                            border-none
-                            bg-transparent
-                            p-1
-                            transition
-                            hover:bg-gray-100
-                        "
-                        aria-label="Comments"
-                    >
-                        <MessageCircle
-                            size={21}
-                            strokeWidth={2}
-                            className="text-black"
-                        />
-                    </button>
+        <div className="flex items-center justify-center gap-[2.5px] bg-white p-[5px]">
+          <button type="button" onClick={handleOpenPost} className="flex cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-1 transition hover:bg-gray-100" aria-label="Comments">
+            <MessageCircle size={21} strokeWidth={2} className="text-black" />
+          </button>
 
-                    <div className="px-1">
-                        <p className="m-0">
-                            {post.comments || 0}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </article>
-    );
+          <div className="px-1">
+            <p className="m-0">{post.comments || 0}</p>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export default PostCard;

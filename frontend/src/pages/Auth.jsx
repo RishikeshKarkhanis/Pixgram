@@ -64,7 +64,9 @@ function Auth({ mode = "login" }) {
 
             setImageSrc(url);
             setProfilePicture(url);
-        } catch (error) {
+        }
+
+        catch (error) {
             console.error("Profile picture upload failed:", error);
 
             setError("Failed to upload profile picture.");
@@ -87,7 +89,9 @@ function Auth({ mode = "login" }) {
             });
 
             window.location.href = "/";
-        } catch (error) {
+        }
+
+        catch (error) {
             console.error("Login failed:", error);
 
             setError(error.message || "Incorrect Username Or Password!");
@@ -112,7 +116,9 @@ function Auth({ mode = "login" }) {
             // Registration successful.
             // Go to Auth page in login mode.
             window.location.href = "/auth";
-        } catch (error) {
+        }
+
+        catch (error) {
             console.error("Registration failed:", error);
 
             setError(error.message || "User Already Exists!");
@@ -120,24 +126,7 @@ function Auth({ mode = "login" }) {
     };
 
     return (
-        <AuthCard
-            mode={mode}
-            username={username}
-            email={email}
-            password={password}
-            profilePicture={profilePicture}
-            imageSrc={imageSrc}
-            error={error}
-            loading={loading}
-            fileInputRef={fileInputRef}
-            onUsernameChange={setUsername}
-            onEmailChange={setEmail}
-            onPasswordChange={setPassword}
-            onImageUpload={handleImageUpload}
-            onFileChange={handleFileChange}
-            onLogin={handleLogin}
-            onRegister={handleRegister}
-        />
+        <AuthCard mode={mode} username={username} email={email} password={password} profilePicture={profilePicture} imageSrc={imageSrc} error={error} loading={loading} fileInputRef={fileInputRef} onUsernameChange={setUsername} onEmailChange={setEmail} onPasswordChange={setPassword} onImageUpload={handleImageUpload} onFileChange={handleFileChange} onLogin={handleLogin} onRegister={handleRegister} />
     );
 }
 

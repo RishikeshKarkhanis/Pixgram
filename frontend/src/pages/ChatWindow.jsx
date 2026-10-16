@@ -47,7 +47,9 @@ const ChatWindow = () => {
                 await markMessagesAsRead(
                     conversationId
                 );
-            } catch (error) {
+            }
+
+            catch (error) {
                 console.error(
                     "Failed to fetch conversation:",
                     error
@@ -85,7 +87,9 @@ const ChatWindow = () => {
             ]);
 
             setMessage("");
-        } catch (error) {
+        }
+
+        catch (error) {
             console.error(
                 "Failed to send message:",
                 error
@@ -94,45 +98,15 @@ const ChatWindow = () => {
     };
 
     return (
-        <div className="
-            h-full
-            flex
-            flex-col
-            bg-[#f4f2ee]
-        ">
+        <div className="h-full flex flex-col bg-[#f4f2ee]">
 
             {/* ================= HEADER ================= */}
-            <header className="
-                h-16
-                shrink-0
-                bg-white
-                border-b border-gray-200
-                flex
-                items-center
-                gap-3
-                px-4
-            ">
+            <header className="h-16 shrink-0 bg-white border-b border-gray-200 flex items-center gap-3 px-4">
 
                 {/* Mobile back */}
-                <button
-                    onClick={() =>
+                <button onClick={() =>
                         navigate("/chats")
-                    }
-                    className="
-                        md:hidden
-                        w-9
-                        h-9
-                        rounded-full
-                        flex
-                        items-center
-                        justify-center
-                        text-gray-600
-                        hover:text-[#28a745]
-                        hover:bg-[#f4f2ee]
-                        transition
-                    "
-                    title="Back to Chats"
-                >
+                    } className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-gray-600 hover:text-[#28a745] hover:bg-[#f4f2ee] transition" title="Back to Chats">
                     <ArrowLeft size={20} />
                 </button>
 
@@ -140,38 +114,20 @@ const ChatWindow = () => {
                 {/* User profile */}
                 {chatUser && (
                     <>
-                        <img
-                            src={
+                        <img src={
                                 chatUser.profilePicture
-                            }
-                            alt={
+                            } alt={
                                 chatUser.username
-                            }
-                            className="
-                                w-10
-                                h-10
-                                rounded-full
-                                object-cover
-                            "
-                        />
+                            } className="w-10 h-10 rounded-full object-cover" />
 
-                        <div className="
-                            min-w-0
-                        ">
-                            <p className="
-                                font-semibold
-                                text-black
-                                truncate
-                            ">
+                        <div className="min-w-0">
+                            <p className="font-semibold text-black truncate">
                                 {
                                     chatUser.username
                                 }
                             </p>
 
-                            <p className="
-                                text-xs
-                                text-gray-500
-                            ">
+                            <p className="text-xs text-gray-500">
                                 Messages
                             </p>
                         </div>
@@ -182,45 +138,23 @@ const ChatWindow = () => {
 
 
             {/* ================= MESSAGES ================= */}
-            <main className="
-                flex-1
-                min-h-0
-                overflow-y-auto
-                px-4
-                py-6
-            ">
+            <main className="flex-1 min-h-0 overflow-y-auto px-4 py-6">
 
                 {loading ? (
 
-                    <div className="
-                        h-full
-                        flex
-                        items-center
-                        justify-center
-                        text-gray-400
-                    ">
+                    <div className="h-full flex items-center justify-center text-gray-400">
                         Loading messages...
                     </div>
 
                 ) : messages.length === 0 ? (
 
-                    <div className="
-                        h-full
-                        flex
-                        items-center
-                        justify-center
-                        text-gray-400
-                    ">
+                    <div className="h-full flex items-center justify-center text-gray-400">
                         No messages yet
                     </div>
 
                 ) : (
 
-                    <div className="
-                        max-w-3xl
-                        mx-auto
-                        space-y-3
-                    ">
+                    <div className="max-w-3xl mx-auto space-y-3">
 
                         {messages.map((item) => {
 
@@ -233,20 +167,16 @@ const ChatWindow = () => {
                                 conversationId;
 
                             return (
-                                <div
-                                    key={item._id}
-                                    className={`
+                                <div key={item._id} className={`
                                         flex
                                         ${
                                             isMine
                                                 ? "justify-end"
                                                 : "justify-start"
                                         }
-                                    `}
-                                >
+                                    `}>
 
-                                    <div
-                                        className={`
+                                    <div className={`
                                             max-w-[75%]
                                             px-4
                                             py-2.5
@@ -271,8 +201,7 @@ const ChatWindow = () => {
                                                         rounded-bl-md
                                                     `
                                             }
-                                        `}
-                                    >
+                                        `}>
                                         {item.message}
                                     </div>
 
@@ -280,9 +209,7 @@ const ChatWindow = () => {
                             );
                         })}
 
-                        <div
-                            ref={messagesEndRef}
-                        />
+                        <div ref={messagesEndRef} />
 
                     </div>
                 )}
@@ -291,76 +218,18 @@ const ChatWindow = () => {
 
 
             {/* ================= INPUT ================= */}
-            <footer className="
-                shrink-0
-                bg-white
-                border-t border-gray-200
-                px-4
-                py-3
-            ">
+            <footer className="shrink-0 bg-white border-t border-gray-200 px-4 py-3">
 
-                <form
-                    onSubmit={handleSend}
-                    className="
-                        max-w-3xl
-                        mx-auto
-                        flex
-                        items-center
-                        gap-2
-                    "
-                >
+                <form onSubmit={handleSend} className="max-w-3xl mx-auto flex items-center gap-2">
 
-                    <input
-                        type="text"
-                        value={message}
-                        onChange={(e) =>
+                    <input type="text" value={message} onChange={(e) =>
                             setMessage(
                                 e.target.value
                             )
-                        }
-                        placeholder="Message..."
-                        className="
-                            flex-1
-                            h-11
-                            bg-[#f4f2ee]
-                            border border-gray-200
-                            rounded-full
-                            px-5
-                            text-black
-                            text-sm
-                            placeholder:text-gray-400
-                            outline-none
-                            focus:border-[#28a745]
-                            focus:ring-1
-                            focus:ring-[#28a745]
-                            transition
-                        "
-                    />
+                        } placeholder="Message..." className="flex-1 h-11 bg-[#f4f2ee] border border-gray-200 rounded-full px-5 text-black text-sm placeholder:text-gray-400 outline-none focus:border-[#28a745] focus:ring-1 focus:ring-[#28a745] transition" />
 
-                    <button
-                        type="submit"
-                        disabled={!message.trim()}
-                        className="
-                            w-11
-                            h-11
-                            shrink-0
-                            rounded-full
-                            bg-[#28a745]
-                            text-white
-                            flex
-                            items-center
-                            justify-center
-                            hover:bg-[#218838]
-                            active:scale-95
-                            disabled:opacity-40
-                            disabled:hover:bg-[#28a745]
-                            transition
-                        "
-                    >
-                        <Send
-                            size={18}
-                            strokeWidth={2}
-                        />
+                    <button type="submit" disabled={!message.trim()} className="w-11 h-11 shrink-0 rounded-full bg-[#28a745] text-white flex items-center justify-center hover:bg-[#218838] active:scale-95 disabled:opacity-40 disabled:hover:bg-[#28a745] transition">
+                        <Send size={18} strokeWidth={2} />
                     </button>
 
                 </form>

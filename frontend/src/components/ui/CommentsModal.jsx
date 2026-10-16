@@ -53,11 +53,7 @@ const CommentsModal = ({
                         Comments
                     </h3>
 
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="rounded-full p-1 text-gray-600 hover:bg-gray-100"
-                    >
+                    <button type="button" onClick={onClose} className="rounded-full p-1 text-gray-600 hover:bg-gray-100">
                         <X size={22} />
                     </button>
 
@@ -71,29 +67,17 @@ const CommentsModal = ({
 
                         comments.map((comment) => (
 
-                            <div
-                                key={comment._id}
-                                className="border-b border-gray-100 px-4 py-3"
-                            >
+                            <div key={comment._id} className="border-b border-gray-100 px-4 py-3">
 
                                 {/* COMMENT HEADER */}
                                 <div className="flex items-center justify-between">
 
                                     <div className="flex items-center gap-2">
 
-                                        <img
-                                            src={
+                                        <img src={
                                                 comment.userId
                                                     ?.profilePicture
-                                            }
-                                            alt=""
-                                            className="
-                                                h-8
-                                                w-8
-                                                rounded-full
-                                                object-cover
-                                            "
-                                        />
+                                            } alt="" className="h-8 w-8 rounded-full object-cover" />
 
                                         <span className="font-semibold">
                                             {comment.userId?.username}
@@ -105,21 +89,11 @@ const CommentsModal = ({
                                     {/* DELETE */}
                                     {comment.userId?._id === user?._id && (
 
-                                        <button
-                                            type="button"
-                                            onClick={() =>
+                                        <button type="button" onClick={() =>
                                                 onDeleteComment(
                                                     comment._id
                                                 )
-                                            }
-                                            className="
-                                                rounded-full
-                                                p-1
-                                                text-gray-500
-                                                hover:bg-gray-100
-                                                hover:text-red-500
-                                            "
-                                        >
+                                            } className="rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-red-500">
                                             <X size={17} />
                                         </button>
 
@@ -157,59 +131,14 @@ const CommentsModal = ({
 
                     <div className="flex items-center gap-2">
 
-                        <img
-                            src={profilePicture}
-                            alt=""
-                            className="
-                                h-8
-                                w-8
-                                shrink-0
-                                rounded-full
-                                object-cover
-                            "
-                        />
+                        <img src={profilePicture} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
 
-                        <input
-                            type="text"
-                            value={commentText}
-                            onChange={(e) =>
+                        <input type="text" value={commentText} onChange={(e) =>
                                 setCommentText(e.target.value)
-                            }
-                            onKeyDown={handleKeyDown}
-                            placeholder="Write a comment..."
-                            className="
-                                min-w-0
-                                flex-1
-                                rounded-full
-                                border
-                                border-gray-300
-                                px-4
-                                py-2
-                                text-sm
-                                outline-none
-                                focus:border-green-600
-                            "
-                        />
+                            } onKeyDown={handleKeyDown} placeholder="Write a comment..." className="min-w-0 flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-green-600" />
 
 
-                        <button
-                            type="button"
-                            onClick={handleSubmit}
-                            disabled={!commentText.trim()}
-                            className="
-                                flex
-                                h-9
-                                w-9
-                                shrink-0
-                                items-center
-                                justify-center
-                                rounded-full
-                                text-green-600
-                                hover:bg-green-50
-                                disabled:cursor-not-allowed
-                                disabled:opacity-40
-                            "
-                        >
+                        <button type="button" onClick={handleSubmit} disabled={!commentText.trim()} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-green-600 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-40">
                             <Send size={20} />
                         </button>
 
