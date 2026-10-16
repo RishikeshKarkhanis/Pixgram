@@ -12,7 +12,6 @@ const getUsers = asyncHandler(async (req, res) => {
 // Create user
 const createUser = asyncHandler(async (req, res) => {
     const user = await userService.createUser(req.body);
-
     return res.status(201).json(user);
 });
 

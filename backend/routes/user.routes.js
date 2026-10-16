@@ -1,13 +1,8 @@
 const express = require("express");
 
 // Import controller functions
-const {
-    createUser,
-    getUsers,
-    deleteUser,
-    updateUser,
-    loginUser,
-    logoutUser,
+const { 
+    createUser, getUsers, deleteUser, updateUser, loginUser, logoutUser 
 } = require("../controllers/user.controller.js");
 
 const restrictAccess = require("../middlewares/auth.middleware.js");

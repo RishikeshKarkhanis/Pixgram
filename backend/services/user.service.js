@@ -10,17 +10,13 @@ const { setUser } = require("../utils/auth.js");
 
 const getUsers = async () => {
     const users = await User.find();
-
     console.log("Users retrieved successfully:", users);
-
     return users;
 };
 
 const createUser = async (userData) => {
     const result = await User.create(userData);
-
     console.log("User created successfully:", result);
-
     return result;
 };
 
