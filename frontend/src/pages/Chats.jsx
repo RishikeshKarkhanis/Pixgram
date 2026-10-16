@@ -1,16 +1,7 @@
 import { useEffect, useState } from "react";
-import {
-    Outlet,
-    useNavigate,
-    useParams,
-} from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 
-import {
-    MessageCircle,
-    ArrowLeft,
-    Search,
-    X,
-} from "lucide-react";
+import { MessageCircle, ArrowLeft, Search, X } from "lucide-react";
 
 import { getChatList } from "../api/messages.api";
 import { searchUsers } from "../api/users.api";
@@ -31,17 +22,14 @@ const Chats = () => {
         try {
             const data = await getChatList();
 
-            setChats(
-                Array.isArray(data)
-                    ? data
-                    : []
-            );
-        } catch (error) {
-            console.error(
-                "Failed to fetch chats:",
-                error
-            );
-        } finally {
+            setChats(Array.isArray(data) ? data : []);
+        }
+        
+        catch (error) {
+            console.error( "Failed to fetch chats:", error );
+        } 
+        
+        finally {
             setLoading(false);
         }
     };
@@ -64,22 +52,16 @@ const Chats = () => {
         const timeout = setTimeout(async () => {
             try {
                 setSearching(true);
-
                 const data = await searchUsers(query);
-
-                setSearchResults(
-                    Array.isArray(data)
-                        ? data
-                        : []
-                );
-            } catch (error) {
-                console.error(
-                    "Failed to search users:",
-                    error
-                );
-
+                setSearchResults( Array.isArray(data) ? data : [] );
+            } 
+            
+            catch (error) {
+                console.error( "Failed to search users:", error );
                 setSearchResults([]);
-            } finally {
+            } 
+            
+            finally {
                 setSearching(false);
             }
         }, 300);
