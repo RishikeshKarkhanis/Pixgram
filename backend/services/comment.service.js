@@ -33,13 +33,9 @@ const createComment = async (commentData) => {
         { $inc: { comments: 1 } },
     );
 
-    const post = await Post.findById(commentData.postId)
-        .select("postedBy");
+    const post = await Post.findById(commentData.postId).select("postedBy");
 
-    if (
-        post &&
-        String(post.postedBy) !== String(commentData.userId)
-    ) {
+    if (post && String(post.postedBy) !== String(commentData.userId)) {
         await notificationService.createNotification({
             recipient: post.postedBy,
             sender: commentData.userId,
